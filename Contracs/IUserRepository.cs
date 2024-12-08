@@ -1,0 +1,9 @@
+using Entities.Models;
+
+namespace Contracs;
+
+public interface IUserRepository
+{
+    IEnumerable<User> GetAllUsers(bool trackChanges);
+    User GetUser(Guid userId, bool trackChanges);
+}

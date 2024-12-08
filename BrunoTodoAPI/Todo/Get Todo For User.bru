@@ -1,0 +1,11 @@
+meta {
+  name: Get Todo For User
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{URL}}:{{PORT}}/api/users/{{USERID}}/todos/{{TODOID}}
+  body: none
+  auth: none
+}

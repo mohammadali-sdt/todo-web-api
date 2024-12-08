@@ -1,0 +1,10 @@
+using Shared.DataTransferObjects;
+
+namespace Service.Contracts;
+
+public interface ITodoService
+{
+    IEnumerable<TodoDto> GetAllTodos(Guid userId, bool trackChanges);
+
+    TodoDto GetTodo(Guid userId, Guid todoId, bool trackChanges);
+}

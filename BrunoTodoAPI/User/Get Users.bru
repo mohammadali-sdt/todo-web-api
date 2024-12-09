@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: {{URL}}:{{PORT}}/api/users/{{USERID}}
+  url: {{URL}}:{{PORT}}/api/users
   body: none
   auth: none
+}
+
+headers {
+  Accept: text/json
 }

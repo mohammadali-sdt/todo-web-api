@@ -1,3 +1,13 @@
 namespace Shared.DataTransferObjects;
 
-public record TodoDto(Guid Id, string Title, string Description, bool IsDone);
+
+public record TodoDto
+{
+    public Guid Id { get; init; }
+        
+    public string? Title { get; init; }
+        
+    public string? Description { get; init; }
+        
+    public bool IsDone { get; init; }
+}

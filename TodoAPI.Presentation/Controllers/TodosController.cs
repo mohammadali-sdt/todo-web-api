@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
+using Shared.DataTransferObjects;
 
 namespace TodoAPI.Presentation.Controllers;
 
@@ -22,12 +23,22 @@ public class TodosController : ControllerBase
         return Ok(todos);
     }
 
-    [HttpGet("{todoId:guid}")]
+    [HttpGet("{todoId:guid}", Name="TodoById")]
     public IActionResult GetTodoForUser(Guid userId, Guid todoId)
     {
         var todo = _service.TodoService.GetTodo(userId: userId, todoId: todoId, trackChanges:false);
 
         return Ok(todo);
+    }
+
+    [HttpPost]
+    public IActionResult CreateTodo(Guid userId, [FromBody] TodoForCreationDto todo)
+    {
+        if (todo is null) return BadRequest("TodoForCreation object is null.");
+
+        var createdTodo = _service.TodoService.CreateTodo(todo, userId);
+
+        return CreatedAtRoute("TodoById", new { userId = userId, todoId = createdTodo.Id }, createdTodo);
     }
     
 }

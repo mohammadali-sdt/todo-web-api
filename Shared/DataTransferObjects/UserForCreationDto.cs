@@ -1,6 +1,6 @@
 namespace Shared.DataTransferObjects;
 
-public class UserForCreationDto
+public record UserForCreationDto
 {
     public string? Name { get; init; }
     public string? Email { get; init; }

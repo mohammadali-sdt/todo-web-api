@@ -1,6 +1,7 @@
 using AutoMapper;
 using Contracs;
 using Entities.Exceptions;
+using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 
@@ -45,6 +46,23 @@ public class TodoService : ITodoService
         if (todo == null) throw new TodoNotFoundException(todoId);
 
         var todoDto = _mapper.Map<TodoDto>(todo);
+
+        return todoDto;
+    }
+
+    public TodoDto CreateTodo(TodoForCreationDto todo, Guid userId)
+    {
+        var user = _repositoryManager.User.GetUser(userId, false);
+
+        if (user is null) throw new UserNotFoundException(userId);
+        
+        var todoEntity = _mapper.Map<Todo>(todo);
+        todoEntity.UserId = userId;
+        
+        _repositoryManager.Todo.CreateTodo(todoEntity);
+        _repositoryManager.Save();
+
+        var todoDto = _mapper.Map<TodoDto>(todoEntity);
 
         return todoDto;
     }

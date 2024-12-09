@@ -8,5 +8,5 @@ public interface ITodoService
 
     TodoDto GetTodo(Guid userId, Guid todoId, bool trackChanges);
 
-    TodoDto CreateTodo(TodoForCreationDto todo, Guid userId);
+    TodoDto CreateTodo(TodoForCreationDto todo, Guid userId, bool trackChanges);
 }

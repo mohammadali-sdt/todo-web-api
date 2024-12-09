@@ -50,16 +50,14 @@ public class TodoService : ITodoService
         return todoDto;
     }
 
-    public TodoDto CreateTodo(TodoForCreationDto todo, Guid userId)
+    public TodoDto CreateTodo(TodoForCreationDto todo, Guid userId, bool trackChanges)
     {
-        var user = _repositoryManager.User.GetUser(userId, false);
+        var user = _repositoryManager.User.GetUser(userId, trackChanges);
 
         if (user is null) throw new UserNotFoundException(userId);
         
         var todoEntity = _mapper.Map<Todo>(todo);
-        todoEntity.UserId = userId;
-        
-        _repositoryManager.Todo.CreateTodo(todoEntity);
+        _repositoryManager.Todo.CreateTodo(userId, todoEntity);
         _repositoryManager.Save();
 
         var todoDto = _mapper.Map<TodoDto>(todoEntity);

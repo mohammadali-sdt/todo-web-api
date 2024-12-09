@@ -36,7 +36,7 @@ public class TodosController : ControllerBase
     {
         if (todo is null) return BadRequest("TodoForCreation object is null.");
 
-        var createdTodo = _service.TodoService.CreateTodo(todo, userId);
+        var createdTodo = _service.TodoService.CreateTodo(todo, userId, false);
 
         return CreatedAtRoute("TodoById", new { userId = userId, todoId = createdTodo.Id }, createdTodo);
     }

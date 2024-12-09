@@ -14,5 +14,9 @@ public class TodoRepository: RepositoryBase<Todo>, ITodoRepository
 
     public Todo GetTodo(Guid userId, Guid todoId, bool trackChanges) =>
         FindByCondition(t => t.UserId.Equals(userId) && t.Id.Equals(todoId), trackChanges).SingleOrDefault();
-    public void CreateTodo(Todo todo) => Create(todo);
+    public void CreateTodo(Guid userId, Todo todo)
+    {
+        todo.UserId = userId;
+        Create(todo);
+    }
 }

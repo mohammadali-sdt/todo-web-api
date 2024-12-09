@@ -39,6 +39,22 @@ public class UsersController : ControllerBase
 
         return CreatedAtRoute("UserById", new { userId = createdUser.Id }, createdUser);
         
-    } 
+    }
+
+    [HttpGet("collection/({ids})", Name = "UserCollection")]
+    public IActionResult GetUserCollection(IEnumerable<Guid> ids)
+    {
+        var users = _service.UserService.GetByIds(ids, false);
+
+        return Ok(users);
+    }
+
+    [HttpPost("collection")]
+    public IActionResult CreateUserCollection([FromBody] IEnumerable<UserForCreationDto> userCollection)
+    {
+        var result = _service.UserService.CreateUserCollection(userCollection);
+
+        return CreatedAtRoute("UserCollection", new { result.ids }, result.users);
+    }
     
 }

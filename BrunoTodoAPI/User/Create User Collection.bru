@@ -1,0 +1,30 @@
+meta {
+  name: Create User Collection
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{URL}}:{{PORT}}/api/users/collection
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    {
+      "name": "Sandy",
+      "email": "sandy@gmail.com",
+      "username": "sandy99",
+      "password": "sandysandy134",
+      "age": 32
+    },
+    {
+      "name": "Squidward",
+      "email": "squidward@gmail.com",
+      "username": "squidward",
+      "password": "Squidward",
+      "age": 30
+    }
+  ]
+}

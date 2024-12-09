@@ -7,5 +7,5 @@ public record UserForCreationDto
     public string? Username { get; init; }
     public string? Password { get; init; }
     public int Age { get; init; }
-    public required IEnumerable<TodoForCreationDto> Todos { get; init; }
+    public IEnumerable<TodoForCreationDto> Todos { get; init; }
 }

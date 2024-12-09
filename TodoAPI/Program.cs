@@ -26,6 +26,7 @@ builder.Services.AddControllers(config =>
         config.RespectBrowserAcceptHeader = true;
         config.ReturnHttpNotAcceptable = true;
     }).AddXmlDataContractSerializerFormatters()
+    .AddCustomCsvFormatter()
     .AddApplicationPart(typeof(TodoAPI.Presentation.AssemblyReference).Assembly);
 
 var app = builder.Build();

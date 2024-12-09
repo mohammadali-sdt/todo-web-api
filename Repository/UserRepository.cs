@@ -12,4 +12,6 @@ public class UserRepository : RepositoryBase<User>, IUserRepository
 
     public User GetUser(Guid userId, bool trackChanges) =>
         FindByCondition(u => u.Id.Equals(userId), trackChanges).SingleOrDefault();
+
+    public void CreateUser(User user) => Create(user);
 }

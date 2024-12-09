@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracs;
 using Entities.Exceptions;
+using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 
@@ -46,6 +47,18 @@ public class UserService : IUserService
         
         var userDto = _mapper.Map<UserDto>(user);
         return userDto;
+    }
+
+    public UserDto CreateUser(UserForCreationDto user)
+    {
+        var userEntity = _mapper.Map<User>(user);
+        
+        _repositoryManager.User.CreateUser(userEntity);
+        _repositoryManager.Save();
+
+        var userToReturn = _mapper.Map<UserDto>(userEntity);
+
+        return userToReturn;
     }
 
 }

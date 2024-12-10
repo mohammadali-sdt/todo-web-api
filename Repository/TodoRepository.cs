@@ -19,4 +19,6 @@ public class TodoRepository: RepositoryBase<Todo>, ITodoRepository
         todo.UserId = userId;
         Create(todo);
     }
+
+    public void DeleteTodo(Todo todo) => Delete(todo);
 }

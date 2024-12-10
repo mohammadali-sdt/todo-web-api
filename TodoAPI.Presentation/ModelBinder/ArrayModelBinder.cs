@@ -8,6 +8,7 @@ public class ArrayModelBinder : IModelBinder
 {
     public Task BindModelAsync(ModelBindingContext bindingContext)
     {
+
         if (!bindingContext.ModelMetadata.IsEnumerableType)
         {
             bindingContext.Result = ModelBindingResult.Failed();
@@ -15,7 +16,7 @@ public class ArrayModelBinder : IModelBinder
         }
 
         var providedValue = bindingContext.ValueProvider.GetValue(bindingContext.ModelName).ToString();
-
+        
         if (string.IsNullOrWhiteSpace(providedValue))
         {
             bindingContext.Result = ModelBindingResult.Success(null);
@@ -24,6 +25,7 @@ public class ArrayModelBinder : IModelBinder
 
         var genericType = bindingContext.ModelType.GetTypeInfo().GenericTypeArguments[0];
         var converter = TypeDescriptor.GetConverter(genericType);
+
         var objectArray = providedValue.Split([','], StringSplitOptions.RemoveEmptyEntries)
             .Select(x => converter.ConvertFromString(x.Trim()))
             .ToArray();
@@ -31,9 +33,8 @@ public class ArrayModelBinder : IModelBinder
         var guidArray = Array.CreateInstance(genericType, objectArray.Length);
         objectArray.CopyTo(guidArray, 0);
         bindingContext.Model = guidArray;
-
+        
         bindingContext.Result = ModelBindingResult.Success(bindingContext.Model);
         return Task.CompletedTask;
-
     }
 }

@@ -40,5 +40,13 @@ public class TodosController : ControllerBase
 
         return CreatedAtRoute("TodoById", new { userId = userId, todoId = createdTodo.Id }, createdTodo);
     }
+
+    [HttpDelete("{todoId:guid}")]
+    public IActionResult DeleteTodo(Guid userId, Guid todoId)
+    {
+        _service.TodoService.DeleteTodo(userId, todoId, false);
+
+        return NoContent();
+    }
     
 }

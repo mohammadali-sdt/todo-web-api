@@ -64,4 +64,18 @@ public class TodoService : ITodoService
 
         return todoDto;
     }
+
+    public void DeleteTodo(Guid userId, Guid todoId, bool trackChanges)
+    {
+        var userEntity = _repositoryManager.User.GetUser(userId, trackChanges);
+
+        if (userEntity is null) throw new UserNotFoundException(userId);
+            
+        var todoEntity = _repositoryManager.Todo.GetTodo(userId, todoId, trackChanges);
+
+        if (todoEntity is null) throw new TodoNotFoundException(todoId);
+        
+        _repositoryManager.Todo.DeleteTodo(todoEntity);
+        _repositoryManager.Save();
+    }
 }

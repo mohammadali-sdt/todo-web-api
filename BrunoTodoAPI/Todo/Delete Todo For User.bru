@@ -1,0 +1,11 @@
+meta {
+  name: Delete Todo For User
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{URL}}:{{PORT}}/api/users/{{USERID}}/todos/{{TODOID}}
+  body: none
+  auth: none
+}

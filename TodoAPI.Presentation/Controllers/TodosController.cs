@@ -48,5 +48,13 @@ public class TodosController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPut("{todoId:guid}")]
+    public IActionResult UpdateTodo(Guid userId, Guid todoId, [FromBody] TodoForUpdateDto todo)
+    {
+        _service.TodoService.UpdateTodo(todo, userId, todoId, userTrackChanges:false, todoTrackChanges: true);
+
+        return NoContent();
+    }
     
 }

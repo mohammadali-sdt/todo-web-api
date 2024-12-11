@@ -11,4 +11,6 @@ public interface ITodoService
     TodoDto CreateTodo(TodoForCreationDto todo, Guid userId, bool trackChanges);
 
     void DeleteTodo(Guid userId, Guid todoId, bool trackChanges);
+
+    void UpdateTodo(TodoForUpdateDto todo, Guid userId, Guid todoId, bool userTrackChanges, bool todoTrackChanges);
 }

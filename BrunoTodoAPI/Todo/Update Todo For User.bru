@@ -1,0 +1,19 @@
+meta {
+  name: Update Todo For User
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{URL}}:{{PORT}}/api/users/{{USERID}}/todos/{{TODOID}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "Meeting with Mr.Boo",
+    "description": "Talk about project x",
+    "isDone": true
+  }
+}

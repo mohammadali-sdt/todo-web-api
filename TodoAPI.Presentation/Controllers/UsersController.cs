@@ -57,5 +57,13 @@ public class UsersController : ControllerBase
 
         return CreatedAtRoute("UserCollection", new { result.ids }, result.users);
     }
+
+    [HttpDelete("{userId:guid}")]
+    public IActionResult DeleteUser(Guid userId)
+    {
+        _service.UserService.DeleteUser(userId, false);
+    
+        return NoContent();
+    }
     
 }

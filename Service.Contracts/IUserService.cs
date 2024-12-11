@@ -10,4 +10,6 @@ public interface IUserService
 
     IEnumerable<UserDto> GetByIds(IEnumerable<Guid> ids, bool trackChanges);
     (IEnumerable<UserDto> users, string ids) CreateUserCollection(IEnumerable<UserForCreationDto> userCollection);
+
+    void DeleteUser(Guid userId, bool trackChanges);
 }

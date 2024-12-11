@@ -18,4 +18,6 @@ public class UserRepository : RepositoryBase<User>, IUserRepository
     public IEnumerable<User> GetByIds(IEnumerable<Guid> ids, bool trackChanges) {
         return FindByCondition(u => ids.Contains(u.Id), trackChanges).ToList();
     }
+
+    public void DeleteUser(User user) => Delete(user);
 }

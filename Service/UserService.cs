@@ -96,4 +96,14 @@ public class UserService : IUserService
         return(userCollectionToReturn, ids);
     }
 
+    public void DeleteUser(Guid userId, bool trackChanges)
+    {
+        var user = _repositoryManager.User.GetUser(userId, trackChanges);
+
+        if (user is null) throw new UserNotFoundException(userId);
+        
+        _repositoryManager.User.DeleteUser(user);
+        _repositoryManager.Save();
+    }
+
 }

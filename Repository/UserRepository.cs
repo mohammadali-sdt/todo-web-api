@@ -20,4 +20,5 @@ public class UserRepository : RepositoryBase<User>, IUserRepository
     }
 
     public void DeleteUser(User user) => Delete(user);
+    
 }

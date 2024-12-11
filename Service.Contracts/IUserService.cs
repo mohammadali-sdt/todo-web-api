@@ -12,4 +12,6 @@ public interface IUserService
     (IEnumerable<UserDto> users, string ids) CreateUserCollection(IEnumerable<UserForCreationDto> userCollection);
 
     void DeleteUser(Guid userId, bool trackChanges);
+
+    void UpdateUser(UserForUpdateDto userForUpdateDto, Guid userId, bool trackChanges);
 }

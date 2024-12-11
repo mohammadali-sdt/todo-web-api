@@ -1,0 +1,30 @@
+meta {
+  name: Update User
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{URL}}:{{PORT}}/api/users/{{USERID}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "MR.Foo",
+    "email": "foo2@foo.com",
+    "username": "foo-2",
+    "age": 28,
+    "todos": [
+      {
+        "title": "Watch movie",
+        "description": "watch matrix movie"
+      },
+      {
+        "title": "Read a Book",
+        "description": "Read ASP.NET Core Book"
+      }
+    ]
+  }
+}

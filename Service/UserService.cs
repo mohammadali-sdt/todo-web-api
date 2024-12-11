@@ -106,4 +106,15 @@ public class UserService : IUserService
         _repositoryManager.Save();
     }
 
+    public void UpdateUser(UserForUpdateDto userForUpdateDto, Guid userId, bool trackChanges)
+    {
+        var userEntity = _repositoryManager.User.GetUser(userId, trackChanges);
+
+        if (userEntity is null) throw new UserNotFoundException(userId);
+
+        _mapper.Map(userForUpdateDto, userEntity);
+        
+        _repositoryManager.Save();
+    }
+    
 }

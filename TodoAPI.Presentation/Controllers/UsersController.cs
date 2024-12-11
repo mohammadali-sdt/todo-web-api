@@ -65,5 +65,14 @@ public class UsersController : ControllerBase
     
         return NoContent();
     }
+
+    [HttpPut("{userId:guid}")]
+    public IActionResult UpdateUser ([FromBody] UserForUpdateDto userForUpdateDto, Guid userId)
+    {
+        _service.UserService.UpdateUser(userForUpdateDto, userId, true);
+
+        return NoContent();
+    }
+    
     
 }

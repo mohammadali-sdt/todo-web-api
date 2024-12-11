@@ -16,5 +16,6 @@ public class MappingProfile : Profile
         CreateMap<UserForCreationDto, User>();
         CreateMap<TodoForCreationDto, Todo>();
         CreateMap<TodoForUpdateDto, Todo>();
+        CreateMap<UserForUpdateDto, User>();
     }
 }

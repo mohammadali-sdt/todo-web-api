@@ -93,4 +93,27 @@ public class TodoService : ITodoService
         
         _repositoryManager.Save();
     }
+
+    public (TodoForUpdateDto todoForUpdateDto, Todo todoEntity) PartiallyUpdateTodo(Guid userId, Guid todoId, bool todoTrackChanges, bool userTrackChanges)
+    {
+
+        var user = _repositoryManager.User.GetUser(userId, userTrackChanges);
+
+        if (user is null) throw new UserNotFoundException(userId);
+
+        var todoEntity = _repositoryManager.Todo.GetTodo(userId, todoId, todoTrackChanges);
+
+        if (todoEntity is null) throw new TodoNotFoundException(todoId);
+
+        var todoForPatch = _mapper.Map<TodoForUpdateDto>(todoEntity);
+
+        return (todoForPatch, todoEntity);
+    }
+
+    public void SavePartiallyUpdateTodo(TodoForUpdateDto todoForPatch, Todo todoEntity)
+    {
+        _mapper.Map(todoForPatch, todoEntity);
+        _repositoryManager.Save();
+    }
+
 }

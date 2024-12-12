@@ -15,7 +15,7 @@ public class MappingProfile : Profile
         CreateMap<Todo, TodoDto>();
         CreateMap<UserForCreationDto, User>();
         CreateMap<TodoForCreationDto, Todo>();
-        CreateMap<TodoForUpdateDto, Todo>();
+        CreateMap<TodoForUpdateDto, Todo>().ReverseMap();
         CreateMap<UserForUpdateDto, User>();
     }
 }

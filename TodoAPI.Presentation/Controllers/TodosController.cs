@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
@@ -56,5 +57,22 @@ public class TodosController : ControllerBase
 
         return NoContent();
     }
-    
+
+    [HttpPatch("{todoId:guid}")]
+    public IActionResult PartiallyUpdateTodo(Guid userId, Guid todoId,
+        [FromBody] JsonPatchDocument<TodoForUpdateDto> todoPatch)
+    {
+        if (todoPatch is null) return BadRequest("todoPatch object is null.");
+
+        var result = _service.TodoService.PartiallyUpdateTodo(userId, todoId, true, false);
+        
+        todoPatch.ApplyTo(result.todoForUpdateDto);
+
+        Console.WriteLine(result.todoForUpdateDto.Description);
+        
+        _service.TodoService.SavePartiallyUpdateTodo(result.todoForUpdateDto, result.todoEntity);
+
+        return NoContent();
+
+    }
 }

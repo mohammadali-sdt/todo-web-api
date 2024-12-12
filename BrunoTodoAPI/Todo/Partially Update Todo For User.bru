@@ -1,0 +1,25 @@
+meta {
+  name: Partially Update Todo For User
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{URL}}:{{PORT}}/api/users/{{USERID}}/todos/{{TODOID}}
+  body: json
+  auth: none
+}
+
+headers {
+  content-type: application/json-patch+json
+}
+
+body:json {
+  [
+    {
+      "op": "replace",
+      "path": "/description",
+      "value": "watch Gone with the Wind movie"
+    }
+  ]
+}

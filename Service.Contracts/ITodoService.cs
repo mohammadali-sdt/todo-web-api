@@ -1,3 +1,4 @@
+using Entities.Models;
 using Shared.DataTransferObjects;
 
 namespace Service.Contracts;
@@ -13,4 +14,10 @@ public interface ITodoService
     void DeleteTodo(Guid userId, Guid todoId, bool trackChanges);
 
     void UpdateTodo(TodoForUpdateDto todo, Guid userId, Guid todoId, bool userTrackChanges, bool todoTrackChanges);
+
+    (TodoForUpdateDto todoForUpdateDto, Todo todoEntity) PartiallyUpdateTodo(Guid userId,
+        Guid todoId, bool todoTrackChanges, bool userTrackChanges);
+
+    void SavePartiallyUpdateTodo(TodoForUpdateDto todoForUpdateDto, Todo todoEntity);
+
 }

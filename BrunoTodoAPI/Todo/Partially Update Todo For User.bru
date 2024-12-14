@@ -13,3 +13,13 @@ patch {
 headers {
   content-type: application/json-patch+json
 }
+
+body:json {
+  [
+    {
+      "op": "replace",
+      "path": "/description",
+      "value": "watch Gone with the Wind movie"
+    }
+  ]
+}

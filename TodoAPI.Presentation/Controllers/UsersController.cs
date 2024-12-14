@@ -36,6 +36,11 @@ public class UsersController : ControllerBase
     {
         if (user is null) return BadRequest("UserForCreationDto object is null");
 
+        if (!ModelState.IsValid)
+        {
+            return UnprocessableEntity(ModelState);
+        }
+
         var createdUser = _service.UserService.CreateUser(user);
 
         return CreatedAtRoute("UserById", new { userId = createdUser.Id }, createdUser);

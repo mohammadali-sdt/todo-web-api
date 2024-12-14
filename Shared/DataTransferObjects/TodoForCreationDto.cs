@@ -1,9 +1,7 @@
 namespace Shared.DataTransferObjects;
 
-public record TodoForCreationDto
+public record TodoForCreationDto : TodoForManipulationDto
 {
-    public string? Title { get; init; }
-        
-    public string? Description { get; init; }
+ 
     
 }

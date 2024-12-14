@@ -37,6 +37,11 @@ public class TodosController : ControllerBase
     {
         if (todo is null) return BadRequest("TodoForCreation object is null.");
 
+        if (!ModelState.IsValid)
+        {
+            return UnprocessableEntity(ModelState);
+        }
+
         var createdTodo = _service.TodoService.CreateTodo(todo, userId, false);
 
         return CreatedAtRoute("TodoById", new { userId = userId, todoId = createdTodo.Id }, createdTodo);
@@ -53,6 +58,10 @@ public class TodosController : ControllerBase
     [HttpPut("{todoId:guid}")]
     public IActionResult UpdateTodo(Guid userId, Guid todoId, [FromBody] TodoForUpdateDto todo)
     {
+
+        if (!ModelState.IsValid)
+            return UnprocessableEntity(ModelState);
+        
         _service.TodoService.UpdateTodo(todo, userId, todoId, userTrackChanges: false, todoTrackChanges: true);
 
         return NoContent();
@@ -60,14 +69,20 @@ public class TodosController : ControllerBase
 
     [HttpPatch("{todoId:guid}")]
     public IActionResult PartiallyUpdateTodo(Guid userId, Guid todoId,
-        [FromBody] JsonPatchDocument<TodoForUpdateDto> todoPatch)
+        [FromBody] JsonPatchDocument<TodoForUpdateDto>? todoPatch)
     {
         if (todoPatch is null) 
             return BadRequest("todoPatch object is null.");
 
         var result = _service.TodoService.PartiallyUpdateTodo(userId, todoId, true, false);
         
-        todoPatch.ApplyTo(result.todoForUpdateDto);
+        todoPatch.ApplyTo(result.todoForUpdateDto, ModelState);
+
+        TryValidateModel(result.todoForUpdateDto);
+        
+        if (!ModelState.IsValid)
+            return UnprocessableEntity(ModelState);
+            
         
         _service.TodoService.SavePartiallyUpdateTodo(result.todoForUpdateDto, result.todoEntity);
 

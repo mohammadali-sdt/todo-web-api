@@ -25,5 +25,5 @@ public record UserForCreationDto
     public int Age { get; init; }
     
     
-    public IEnumerable<TodoForCreationDto> Todos { get; init; }
+    public IEnumerable<TodoForCreationDto>? Todos { get; init; }
 }

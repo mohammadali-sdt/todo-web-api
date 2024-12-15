@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using TodoAPI.Presentation.ActionFilters;
 using TodoAPI.Presentation.ModelBinder;
 
 namespace TodoAPI.Presentation.Controllers;
@@ -32,15 +33,9 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> CreateUser([FromBody] UserForCreationDto user)
     {
-        if (user is null) return BadRequest("UserForCreationDto object is null");
-
-        if (!ModelState.IsValid)
-        {
-            return UnprocessableEntity(ModelState);
-        }
-
         var createdUser = await _service.UserService.CreateUserAsync(user);
 
         return CreatedAtRoute("UserById", new { userId = createdUser.Id }, createdUser);
@@ -72,6 +67,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{userId:guid}")]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> UpdateUser ([FromBody] UserForUpdateDto userForUpdateDto, Guid userId)
     {
         await _service.UserService.UpdateUserAsync(userForUpdateDto, userId, true);

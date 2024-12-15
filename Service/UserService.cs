@@ -7,114 +7,91 @@ using Shared.DataTransferObjects;
 
 namespace Service;
 
-public class UserService : IUserService
+public class UserService : ServiceBase, IUserService
 {
-    private readonly IRepositoryManager _repositoryManager;
-    private readonly ILoggerManager _logger;
-    private readonly IMapper _mapper;
-
-
-    public UserService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper)
+    public UserService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper): base(repositoryManager, logger, mapper)
     {
-        _repositoryManager = repositoryManager;
-        _logger = logger;
-        _mapper = mapper;
     }
-
-    public IEnumerable<UserDto> GetAllUsers(bool trackChanges)
+    
+    public async Task<IEnumerable<UserDto>> GetAllUsersAsync(bool trackChanges)
     {
-        var users = _repositoryManager.User.GetAllUsers(trackChanges);
+        var users = await RepositoryManager.User.GetAllUsersAsync(trackChanges);
 
-        // var usersDto = users.Select(u =>
-        //     new UserDto(
-        //         Username: u.Username,
-        //         Email: u.Email,
-        //         Id: u.Id,
-        //         FullName: u.Name,
-        //         Age:  u.Age
-        //         )).ToList();
-
-        var usersDto = _mapper.Map<IEnumerable<UserDto>>(users);
+        var usersDto = Mapper.Map<IEnumerable<UserDto>>(users);
 
         return usersDto;
     }
 
-    public UserDto GetUser(Guid userId, bool trackChanges)
+    public async Task<UserDto> GetUserAsync(Guid userId, bool trackChanges)
     {
-        var user = _repositoryManager.User.GetUser(userId, trackChanges);
-
-        if (user == null) throw new UserNotFoundException(userId);
+        var user = await CheckUserIsExists(userId, trackChanges);
         
-        var userDto = _mapper.Map<UserDto>(user);
+        var userDto = Mapper.Map<UserDto>(user);
         return userDto;
     }
 
-    public UserDto CreateUser(UserForCreationDto user)
+    public async Task<UserDto> CreateUserAsync(UserForCreationDto user)
     {
-        var userEntity = _mapper.Map<User>(user);
+        var userEntity = Mapper.Map<Entities.Models.User>(user);
         
-        _repositoryManager.User.CreateUser(userEntity);
-        _repositoryManager.Save();
+        RepositoryManager.User.CreateUser(userEntity);
+        await RepositoryManager.SaveAsync();
 
-        var userToReturn = _mapper.Map<UserDto>(userEntity);
+        var userToReturn = Mapper.Map<UserDto>(userEntity);
 
         return userToReturn;
     }
 
-    public IEnumerable<UserDto> GetByIds(IEnumerable<Guid> ids, bool trackChanges)
+    public async Task<IEnumerable<UserDto>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges)
     {
         if (ids is null)
             throw new IdParametersBadRequestException();
 
-        var userEntites = _repositoryManager.User.GetByIds(ids, trackChanges);
+        var userEntites = await RepositoryManager.User.GetByIdsAsync(ids, trackChanges);
         if (ids.Count() != userEntites.Count())
             throw new CollectionByIdsBadRequestException();
 
-        var usersToReturn = _mapper.Map<IEnumerable<UserDto>>(userEntites);
+        var usersToReturn = Mapper.Map<IEnumerable<UserDto>>(userEntites);
 
         return usersToReturn;
 
 
     }
 
-    public (IEnumerable<UserDto> users, string ids) CreateUserCollection(IEnumerable<UserForCreationDto> userCollection)
+    public async Task<(IEnumerable<UserDto> users, string ids)> CreateUserCollectionAsync(IEnumerable<UserForCreationDto> userCollection)
     {
         if (userCollection is null) throw new UserCollectionBadRequest();
 
-        var userEntities = _mapper.Map<IEnumerable<User>>(userCollection);
+        var userEntities = Mapper.Map<IEnumerable<Entities.Models.User>>(userCollection);
 
         foreach (var user in userEntities)
         {
-            _repositoryManager.User.CreateUser(user);
+            RepositoryManager.User.CreateUser(user);
         }
-        _repositoryManager.Save();
+        await RepositoryManager.SaveAsync();
 
-        var userCollectionToReturn = _mapper.Map<IEnumerable<UserDto>>(userEntities);
+        var userCollectionToReturn = Mapper.Map<IEnumerable<UserDto>>(userEntities);
         var ids = string.Join(",", userCollectionToReturn.Select(u => u.Id));
         
         
         return(userCollectionToReturn, ids);
     }
 
-    public void DeleteUser(Guid userId, bool trackChanges)
+    public async Task DeleteUserAsync(Guid userId, bool trackChanges)
     {
-        var user = _repositoryManager.User.GetUser(userId, trackChanges);
-
-        if (user is null) throw new UserNotFoundException(userId);
+        var user = await CheckUserIsExists(userId, trackChanges);
         
-        _repositoryManager.User.DeleteUser(user);
-        _repositoryManager.Save();
+        RepositoryManager.User.DeleteUser(user);
+        await RepositoryManager.SaveAsync();
     }
 
-    public void UpdateUser(UserForUpdateDto userForUpdateDto, Guid userId, bool trackChanges)
+    public async Task UpdateUserAsync(UserForUpdateDto userForUpdateDto, Guid userId, bool trackChanges)
     {
-        var userEntity = _repositoryManager.User.GetUser(userId, trackChanges);
+        var userEntity = await CheckUserIsExists(userId, trackChanges);
 
-        if (userEntity is null) throw new UserNotFoundException(userId);
-
-        _mapper.Map(userForUpdateDto, userEntity);
+        Mapper.Map(userForUpdateDto, userEntity);
         
-        _repositoryManager.Save();
+        await RepositoryManager.SaveAsync();
     }
     
 }

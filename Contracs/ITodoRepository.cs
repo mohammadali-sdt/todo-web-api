@@ -4,8 +4,8 @@ namespace Contracs;
 
 public interface ITodoRepository
 {
-    IEnumerable<Todo> GetAllTodos(Guid userId, bool trackChanges);
-    Todo GetTodo(Guid userId, Guid todoId, bool trackChanges);
+    Task<IEnumerable<Todo>> GetAllTodosAsync(Guid userId, bool trackChanges);
+    Task<Todo> GetTodoAsync(Guid userId, Guid todoId, bool trackChanges);
     void CreateTodo(Guid userId, Todo todo);
     void DeleteTodo(Todo todo);
 }

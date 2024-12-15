@@ -7,113 +7,88 @@ using Shared.DataTransferObjects;
 
 namespace Service;
 
-public class TodoService : ITodoService
+public class TodoService : ServiceBase, ITodoService
 {
-    private readonly IRepositoryManager _repositoryManager;
-    private readonly ILoggerManager _logger;
-    private readonly IMapper _mapper;
-
-
-    public TodoService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper)
+    
+    public TodoService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper) : base(repositoryManager, logger, mapper)
     {
-        _repositoryManager = repositoryManager;
-        _logger = logger;
-        _mapper = mapper;
     }
 
-    public IEnumerable<TodoDto> GetAllTodos(Guid userId, bool trackChanges)
+    public async Task<IEnumerable<TodoDto>> GetAllTodosAsync(Guid userId, bool trackChanges)
     {
-        var user = _repositoryManager.User.GetUser(userId, trackChanges);
+        var user = await RepositoryManager.User.GetUserAsync(userId, trackChanges);
 
         if (user == null) throw new UserNotFoundException(userId);
 
-        var todos = _repositoryManager.Todo.GetAllTodos(userId, trackChanges);
+        var todos = await RepositoryManager.Todo.GetAllTodosAsync(userId, trackChanges);
 
-        var todosDto = _mapper.Map<IEnumerable<TodoDto>>(todos);
+        var todosDto = Mapper.Map<IEnumerable<TodoDto>>(todos);
 
         return todosDto;
 
     }
 
-    public TodoDto GetTodo(Guid userId, Guid todoId, bool trackChanges)
+    public async  Task<TodoDto> GetTodoAsync(Guid userId, Guid todoId, bool trackChanges)
     {
-        var user = _repositoryManager.User.GetUser(userId, trackChanges);
+        await CheckUserIsExists(userId, trackChanges);
 
-        if (user == null) throw new UserNotFoundException(userId);
+        var todo = await CheckTodoIsExists(userId, todoId, trackChanges);
 
-        var todo = _repositoryManager.Todo.GetTodo(userId, todoId, trackChanges);
-
-        if (todo == null) throw new TodoNotFoundException(todoId);
-
-        var todoDto = _mapper.Map<TodoDto>(todo);
+        var todoDto = Mapper.Map<TodoDto>(todo);
 
         return todoDto;
     }
 
-    public TodoDto CreateTodo(TodoForCreationDto todo, Guid userId, bool trackChanges)
+    public async Task<TodoDto> CreateTodoAsync(TodoForCreationDto todo, Guid userId, bool trackChanges)
     {
-        var user = _repositoryManager.User.GetUser(userId, trackChanges);
-
-        if (user is null) throw new UserNotFoundException(userId);
+        await CheckUserIsExists(userId, trackChanges);
         
-        var todoEntity = _mapper.Map<Todo>(todo);
-        _repositoryManager.Todo.CreateTodo(userId, todoEntity);
-        _repositoryManager.Save();
+        var todoEntity = Mapper.Map<Entities.Models.Todo>(todo);
+        RepositoryManager.Todo.CreateTodo(userId, todoEntity);
+        await RepositoryManager.SaveAsync();
 
-        var todoDto = _mapper.Map<TodoDto>(todoEntity);
+        var todoDto = Mapper.Map<TodoDto>(todoEntity);
 
         return todoDto;
     }
 
-    public void DeleteTodo(Guid userId, Guid todoId, bool trackChanges)
+    public async Task DeleteTodoAsync(Guid userId, Guid todoId, bool trackChanges)
     {
-        var userEntity = _repositoryManager.User.GetUser(userId, trackChanges);
+        await CheckUserIsExists(userId, trackChanges);
 
-        if (userEntity is null) throw new UserNotFoundException(userId);
-            
-        var todoEntity = _repositoryManager.Todo.GetTodo(userId, todoId, trackChanges);
-
-        if (todoEntity is null) throw new TodoNotFoundException(todoId);
+        var todoEntity = await CheckTodoIsExists(userId, todoId, trackChanges);
         
-        _repositoryManager.Todo.DeleteTodo(todoEntity);
-        _repositoryManager.Save();
+        RepositoryManager.Todo.DeleteTodo(todoEntity);
+        await RepositoryManager.SaveAsync();
     }
 
-    public void UpdateTodo(TodoForUpdateDto todo, Guid userId, Guid todoId, bool userTrackChanges, bool todoTrackChanges)
+    public async Task UpdateTodoAsync(TodoForUpdateDto todo, Guid userId, Guid todoId, bool userTrackChanges, bool todoTrackChanges)
     {
-        var userEntity = _repositoryManager.User.GetUser(userId, userTrackChanges);
+        await CheckUserIsExists(userId, userTrackChanges);
 
-        if (userEntity is null) throw new UserNotFoundException(userId);
-
-        var todoEntity = _repositoryManager.Todo.GetTodo(userId, todoId, todoTrackChanges);
-
-        if (todoEntity is null) throw new TodoNotFoundException(todoId);
+        var todoEntity = await CheckTodoIsExists(userId, todoId, todoTrackChanges);
         
-        _mapper.Map(todo, todoEntity);
+        Mapper.Map(todo, todoEntity);
         
-        _repositoryManager.Save();
+        await RepositoryManager.SaveAsync();
     }
 
-    public (TodoForUpdateDto todoForUpdateDto, Todo todoEntity) PartiallyUpdateTodo(Guid userId, Guid todoId, bool todoTrackChanges, bool userTrackChanges)
+    public async Task<(TodoForUpdateDto todoForUpdateDto, Entities.Models.Todo todoEntity)> PartiallyUpdateTodoAsync(Guid userId, Guid todoId, bool todoTrackChanges, bool userTrackChanges)
     {
 
-        var user = _repositoryManager.User.GetUser(userId, userTrackChanges);
+        await CheckUserIsExists(userId, userTrackChanges);
 
-        if (user is null) throw new UserNotFoundException(userId);
+        var todoEntity = await CheckTodoIsExists(userId, todoId, todoTrackChanges);
 
-        var todoEntity = _repositoryManager.Todo.GetTodo(userId, todoId, todoTrackChanges);
-
-        if (todoEntity is null) throw new TodoNotFoundException(todoId);
-
-        var todoForPatch = _mapper.Map<TodoForUpdateDto>(todoEntity);
+        var todoForPatch = Mapper.Map<TodoForUpdateDto>(todoEntity);
 
         return (todoForPatch, todoEntity);
     }
 
-    public void SavePartiallyUpdateTodo(TodoForUpdateDto todoForPatch, Todo todoEntity)
+    public async Task SavePartiallyUpdateTodoAsync(TodoForUpdateDto todoForPatch, Entities.Models.Todo todoEntity)
     {
-        _mapper.Map(todoForPatch, todoEntity);
-        _repositoryManager.Save();
+        Mapper.Map(todoForPatch, todoEntity);
+        await RepositoryManager.SaveAsync();
     }
 
 }

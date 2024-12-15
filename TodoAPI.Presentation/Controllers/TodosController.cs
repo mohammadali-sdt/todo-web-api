@@ -17,23 +17,23 @@ public class TodosController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetTodosForUser(Guid userId)
+    public async Task<IActionResult> GetTodosForUser(Guid userId)
     {
-        var todos = _service.TodoService.GetAllTodos(userId, trackChanges: false);
+        var todos = await _service.TodoService.GetAllTodosAsync(userId, trackChanges: false);
 
         return Ok(todos);
     }
 
     [HttpGet("{todoId:guid}", Name = "TodoById")]
-    public IActionResult GetTodoForUser(Guid userId, Guid todoId)
+    public async Task<IActionResult> GetTodoForUser(Guid userId, Guid todoId)
     {
-        var todo = _service.TodoService.GetTodo(userId: userId, todoId: todoId, trackChanges: false);
+        var todo = await _service.TodoService.GetTodoAsync(userId: userId, todoId: todoId, trackChanges: false);
 
         return Ok(todo);
     }
 
     [HttpPost]
-    public IActionResult CreateTodo(Guid userId, [FromBody] TodoForCreationDto todo)
+    public async Task<IActionResult> CreateTodo(Guid userId, [FromBody] TodoForCreationDto todo)
     {
         if (todo is null) return BadRequest("TodoForCreation object is null.");
 
@@ -42,39 +42,39 @@ public class TodosController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
 
-        var createdTodo = _service.TodoService.CreateTodo(todo, userId, false);
+        var createdTodo = await _service.TodoService.CreateTodoAsync(todo, userId, false);
 
         return CreatedAtRoute("TodoById", new { userId = userId, todoId = createdTodo.Id }, createdTodo);
     }
 
     [HttpDelete("{todoId:guid}")]
-    public IActionResult DeleteTodo(Guid userId, Guid todoId)
+    public async Task<IActionResult> DeleteTodo(Guid userId, Guid todoId)
     {
-        _service.TodoService.DeleteTodo(userId, todoId, false);
+        await _service.TodoService.DeleteTodoAsync(userId, todoId, false);
 
         return NoContent();
     }
 
     [HttpPut("{todoId:guid}")]
-    public IActionResult UpdateTodo(Guid userId, Guid todoId, [FromBody] TodoForUpdateDto todo)
+    public async Task<IActionResult> UpdateTodo(Guid userId, Guid todoId, [FromBody] TodoForUpdateDto todo)
     {
 
         if (!ModelState.IsValid)
             return UnprocessableEntity(ModelState);
         
-        _service.TodoService.UpdateTodo(todo, userId, todoId, userTrackChanges: false, todoTrackChanges: true);
+        await _service.TodoService.UpdateTodoAsync(todo, userId, todoId, userTrackChanges: false, todoTrackChanges: true);
 
         return NoContent();
     }
 
     [HttpPatch("{todoId:guid}")]
-    public IActionResult PartiallyUpdateTodo(Guid userId, Guid todoId,
+    public async Task<IActionResult> PartiallyUpdateTodo(Guid userId, Guid todoId,
         [FromBody] JsonPatchDocument<TodoForUpdateDto>? todoPatch)
     {
         if (todoPatch is null) 
             return BadRequest("todoPatch object is null.");
 
-        var result = _service.TodoService.PartiallyUpdateTodo(userId, todoId, true, false);
+        var result = await _service.TodoService.PartiallyUpdateTodoAsync(userId, todoId, true, false);
         
         todoPatch.ApplyTo(result.todoForUpdateDto, ModelState);
 
@@ -84,7 +84,7 @@ public class TodosController : ControllerBase
             return UnprocessableEntity(ModelState);
             
         
-        _service.TodoService.SavePartiallyUpdateTodo(result.todoForUpdateDto, result.todoEntity);
+        await _service.TodoService.SavePartiallyUpdateTodoAsync(result.todoForUpdateDto, result.todoEntity);
 
         return NoContent();
 

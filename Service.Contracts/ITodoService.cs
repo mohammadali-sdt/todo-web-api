@@ -5,19 +5,19 @@ namespace Service.Contracts;
 
 public interface ITodoService
 {
-    IEnumerable<TodoDto> GetAllTodos(Guid userId, bool trackChanges);
+    Task<IEnumerable<TodoDto>> GetAllTodosAsync(Guid userId, bool trackChanges);
 
-    TodoDto GetTodo(Guid userId, Guid todoId, bool trackChanges);
+    Task<TodoDto> GetTodoAsync(Guid userId, Guid todoId, bool trackChanges);
 
-    TodoDto CreateTodo(TodoForCreationDto todo, Guid userId, bool trackChanges);
+    Task<TodoDto> CreateTodoAsync(TodoForCreationDto todo, Guid userId, bool trackChanges);
 
-    void DeleteTodo(Guid userId, Guid todoId, bool trackChanges);
+    Task DeleteTodoAsync(Guid userId, Guid todoId, bool trackChanges);
 
-    void UpdateTodo(TodoForUpdateDto todo, Guid userId, Guid todoId, bool userTrackChanges, bool todoTrackChanges);
+    Task UpdateTodoAsync(TodoForUpdateDto todo, Guid userId, Guid todoId, bool userTrackChanges, bool todoTrackChanges);
 
-    (TodoForUpdateDto todoForUpdateDto, Todo todoEntity) PartiallyUpdateTodo(Guid userId,
+    Task<(TodoForUpdateDto todoForUpdateDto, Todo todoEntity)> PartiallyUpdateTodoAsync(Guid userId,
         Guid todoId, bool todoTrackChanges, bool userTrackChanges);
 
-    void SavePartiallyUpdateTodo(TodoForUpdateDto todoForUpdateDto, Todo todoEntity);
+    Task SavePartiallyUpdateTodoAsync(TodoForUpdateDto todoForUpdateDto, Todo todoEntity);
 
 }

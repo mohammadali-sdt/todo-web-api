@@ -18,5 +18,5 @@ public sealed class RepositoryManager: IRepositoryManager
     public IUserRepository User => _userRepository.Value;
     public ITodoRepository Todo => _todoRepository.Value;
     
-    public void Save() => _repositoryContext.SaveChanges();
+    public async Task SaveAsync() => await _repositoryContext.SaveChangesAsync();
 }

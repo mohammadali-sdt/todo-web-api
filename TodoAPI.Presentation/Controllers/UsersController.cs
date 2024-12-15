@@ -17,22 +17,22 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetUsers()
+    public async Task<IActionResult> GetUsers()
     {
-        var users = _service.UserService.GetAllUsers(trackChanges: false);
+        var users = await _service.UserService.GetAllUsersAsync(trackChanges: false);
 
         return Ok(users);
     }
 
     [HttpGet("{userId:guid}", Name = "UserById")]
-    public IActionResult GetUser(Guid userId)
+    public async Task<IActionResult> GetUser(Guid userId)
     {
-        var user = _service.UserService.GetUser(userId: userId, trackChanges: false);
+        var user = await _service.UserService.GetUserAsync(userId: userId, trackChanges: false);
         return Ok(user);
     }
 
     [HttpPost]
-    public IActionResult CreateUser([FromBody] UserForCreationDto user)
+    public async Task<IActionResult> CreateUser([FromBody] UserForCreationDto user)
     {
         if (user is null) return BadRequest("UserForCreationDto object is null");
 
@@ -41,40 +41,40 @@ public class UsersController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
 
-        var createdUser = _service.UserService.CreateUser(user);
+        var createdUser = await _service.UserService.CreateUserAsync(user);
 
         return CreatedAtRoute("UserById", new { userId = createdUser.Id }, createdUser);
         
     }
 
     [HttpGet("collection/({ids})", Name = "UserCollection")]
-    public IActionResult GetUserCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
+    public async Task<IActionResult> GetUserCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
     {
-        var users = _service.UserService.GetByIds(ids, false);
+        var users = await _service.UserService.GetByIdsAsync(ids, false);
 
         return Ok(users);
     }
 
     [HttpPost("collection")]
-    public IActionResult CreateUserCollection([FromBody] IEnumerable<UserForCreationDto> userCollection)
+    public async Task<IActionResult> CreateUserCollection([FromBody] IEnumerable<UserForCreationDto> userCollection)
     {
-        var result = _service.UserService.CreateUserCollection(userCollection);
+        var result = await _service.UserService.CreateUserCollectionAsync(userCollection);
 
         return CreatedAtRoute("UserCollection", new { result.ids }, result.users);
     }
 
     [HttpDelete("{userId:guid}")]
-    public IActionResult DeleteUser(Guid userId)
+    public async Task<IActionResult> DeleteUser(Guid userId)
     {
-        _service.UserService.DeleteUser(userId, false);
+        await _service.UserService.DeleteUserAsync(userId, false);
     
         return NoContent();
     }
 
     [HttpPut("{userId:guid}")]
-    public IActionResult UpdateUser ([FromBody] UserForUpdateDto userForUpdateDto, Guid userId)
+    public async Task<IActionResult> UpdateUser ([FromBody] UserForUpdateDto userForUpdateDto, Guid userId)
     {
-        _service.UserService.UpdateUser(userForUpdateDto, userId, true);
+        await _service.UserService.UpdateUserAsync(userForUpdateDto, userId, true);
 
         return NoContent();
     }

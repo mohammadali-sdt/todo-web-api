@@ -2,6 +2,7 @@ using System;
 using Contracs;
 using Entities.Exceptions;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repository;
 
@@ -9,11 +10,11 @@ public class TodoRepository: RepositoryBase<Todo>, ITodoRepository
 {
     public TodoRepository(RepositoryContext repositoryContext) : base(repositoryContext){}
 
-    public IEnumerable<Todo> GetAllTodos(Guid userId, bool trackChanges) =>
-        FindByCondition(t => t.UserId.Equals(userId), trackChanges);
+    public async Task<IEnumerable<Todo>> GetAllTodosAsync(Guid userId, bool trackChanges) =>
+        await FindByCondition(t => t.UserId.Equals(userId), trackChanges).ToListAsync();
 
-    public Todo GetTodo(Guid userId, Guid todoId, bool trackChanges) =>
-        FindByCondition(t => t.UserId.Equals(userId) && t.Id.Equals(todoId), trackChanges).SingleOrDefault();
+    public async Task<Todo> GetTodoAsync(Guid userId, Guid todoId, bool trackChanges) =>
+        await FindByCondition(t => t.UserId.Equals(userId) && t.Id.Equals(todoId), trackChanges).SingleOrDefaultAsync();
     public void CreateTodo(Guid userId, Todo todo)
     {
         todo.UserId = userId;

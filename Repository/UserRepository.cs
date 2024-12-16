@@ -1,6 +1,7 @@
 using Contracs;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using Repository.Extensions;
 using Shared.RequestFeature;
 
 namespace Repository;
@@ -11,13 +12,15 @@ public class UserRepository : RepositoryBase<User>, IUserRepository
 
     public async Task<PagedList<User>> GetAllUsersAsync(UserParameters userParameters, bool trackChanges)
     {
-        var users = await FindByCondition(u => u.Age >= userParameters.MinAge && u.Age <= userParameters.MaxAge, trackChanges)
+        var users = await FindAll(trackChanges)
+            .FilterUsers(userParameters.MinAge, userParameters.MaxAge)
+            .Search(userParameters.SearchTerm)
             .OrderBy(u => u.Name)
             .Skip((userParameters.PageNumber - 1) * userParameters.PageSize)
             .Take(userParameters.PageSize)
             .ToListAsync();
 
-        var count = await FindByCondition(u => u.Age >= userParameters.MinAge && u.Age <= userParameters.MaxAge, trackChanges).CountAsync();
+        var count = await FindAll(trackChanges).FilterUsers(userParameters.MinAge, userParameters.MaxAge).CountAsync();
 
         return new PagedList<User>(users, count, userParameters.PageNumber, userParameters.PageSize);
     }

@@ -5,9 +5,15 @@ meta {
 }
 
 get {
-  url: {{URL}}:{{PORT}}/api/users
+  url: {{URL}}:{{PORT}}/api/users?pageNumber=1&pageSize=2&maxAge=28
   body: none
   auth: none
+}
+
+params:query {
+  pageNumber: 1
+  pageSize: 2
+  maxAge: 28
 }
 
 headers {

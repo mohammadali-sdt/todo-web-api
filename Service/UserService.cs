@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Contracs;
 using Entities.Exceptions;
-using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeature;
 
 namespace Service;
 
@@ -13,13 +13,13 @@ public class UserService : ServiceBase, IUserService
     {
     }
     
-    public async Task<IEnumerable<UserDto>> GetAllUsersAsync(bool trackChanges)
+    public async Task<(IEnumerable<UserDto> users, MetaData metaData)> GetAllUsersAsync(UserParameters userParameters, bool trackChanges)
     {
-        var users = await RepositoryManager.User.GetAllUsersAsync(trackChanges);
+        var users = await RepositoryManager.User.GetAllUsersAsync(userParameters, trackChanges);
 
         var usersDto = Mapper.Map<IEnumerable<UserDto>>(users);
 
-        return usersDto;
+        return (usersDto, users.MetaData);
     }
 
     public async Task<UserDto> GetUserAsync(Guid userId, bool trackChanges)

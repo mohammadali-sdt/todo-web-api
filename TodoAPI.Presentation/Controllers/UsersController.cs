@@ -1,6 +1,8 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeature;
 using TodoAPI.Presentation.ActionFilters;
 using TodoAPI.Presentation.ModelBinder;
 
@@ -18,11 +20,13 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetUsers()
+    public async Task<IActionResult> GetUsers([FromQuery] UserParameters userParameters)
     {
-        var users = await _service.UserService.GetAllUsersAsync(trackChanges: false);
+        var pagedResult = await _service.UserService.GetAllUsersAsync(userParameters,false);
 
-        return Ok(users);
+        Response.Headers["X-Pagination"] = JsonSerializer.Serialize(pagedResult.metaData);
+        
+        return Ok(pagedResult.users);
     }
 
     [HttpGet("{userId:guid}", Name = "UserById")]

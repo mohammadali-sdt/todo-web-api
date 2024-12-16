@@ -6,7 +6,7 @@ using Service.Contracts;
 
 namespace Service;
 
-public class ServiceBase: IServiceBase
+public abstract class ServiceBase: IServiceBase
 {
     protected IRepositoryManager RepositoryManager { get; }
     protected ILoggerManager Logger { get; }

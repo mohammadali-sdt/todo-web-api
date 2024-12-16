@@ -5,12 +5,12 @@ meta {
 }
 
 get {
-  url: {{URL}}:{{PORT}}/api/users/{{USERID}}/todos?pageSize=2&pageNumber=2
+  url: {{URL}}:{{PORT}}/api/users/{{USERID}}/todos?pageNumber=2&pageSize=7
   body: none
   auth: none
 }
 
 params:query {
-  pageSize: 2
   pageNumber: 2
+  pageSize: 7
 }

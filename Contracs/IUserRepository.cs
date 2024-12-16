@@ -1,10 +1,11 @@
 using Entities.Models;
+using Shared.RequestFeature;
 
 namespace Contracs;
 
 public interface IUserRepository
 {
-    Task<IEnumerable<User>> GetAllUsersAsync(bool trackChanges);
+    Task<PagedList<User>> GetAllUsersAsync(UserParameters userParameters, bool trackChanges);
     Task<User> GetUserAsync(Guid userId, bool trackChanges);
     void CreateUser(User user);
 

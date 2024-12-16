@@ -4,6 +4,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeature;
 
 namespace Service;
 
@@ -14,17 +15,15 @@ public class TodoService : ServiceBase, ITodoService
     {
     }
 
-    public async Task<IEnumerable<TodoDto>> GetAllTodosAsync(Guid userId, bool trackChanges)
+    public async Task<(IEnumerable<TodoDto> todos, MetaData metaData)> GetAllTodosAsync(Guid userId, TodoParameters todoParameters ,bool trackChanges)
     {
-        var user = await RepositoryManager.User.GetUserAsync(userId, trackChanges);
+        await CheckUserIsExists(userId, trackChanges);
 
-        if (user == null) throw new UserNotFoundException(userId);
+        var todosWithMetaDate = await RepositoryManager.Todo.GetAllTodosAsync(userId, todoParameters, trackChanges);
 
-        var todos = await RepositoryManager.Todo.GetAllTodosAsync(userId, trackChanges);
+        var todosDto = Mapper.Map<IEnumerable<TodoDto>>(todosWithMetaDate);
 
-        var todosDto = Mapper.Map<IEnumerable<TodoDto>>(todos);
-
-        return todosDto;
+        return (todosDto, todosWithMetaDate.MetaData);
 
     }
 

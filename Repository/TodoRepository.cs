@@ -3,6 +3,7 @@ using Contracs;
 using Entities.Exceptions;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.RequestFeature;
 
 namespace Repository;
 
@@ -10,8 +11,29 @@ public class TodoRepository: RepositoryBase<Todo>, ITodoRepository
 {
     public TodoRepository(RepositoryContext repositoryContext) : base(repositoryContext){}
 
-    public async Task<IEnumerable<Todo>> GetAllTodosAsync(Guid userId, bool trackChanges) =>
-        await FindByCondition(t => t.UserId.Equals(userId), trackChanges).ToListAsync();
+    public async Task<PagedList<Todo>> GetAllTodosAsync(Guid userId, TodoParameters todoParameters , bool trackChanges)  {
+        
+        // great for small amount of data
+        var todos = await FindByCondition(t => t.UserId.Equals(userId), trackChanges)
+            .OrderBy(t => t.Title)
+            .Skip((todoParameters.PageNumber - 1) * todoParameters.PageSize)
+            .Take(todoParameters.PageSize)
+            .ToListAsync();
+        return PagedList<Todo>
+            .ToPagedList(todos, todoParameters.PageNumber, todoParameters.PageSize);
+
+        // if we have millions of rows...
+        // var todos = await FindByCondition(t => t.UserId.Equals(userId), trackChanges)
+        //     .OrderBy(t => t.Title)
+        //     .Skip((todoParameters.PageNumber - 1) * todoParameters.PageSize)
+        //     .Take(todoParameters.PageSize)
+        //     .ToListAsync();
+        //
+        // var count = await FindByCondition(t => t.UserId.Equals(userId), trackChanges).CountAsync();
+        //
+        // return new PagedList<Todo>(todos, count, todoParameters.PageNumber, todoParameters.PageSize);
+    }
+        
 
     public async Task<Todo> GetTodoAsync(Guid userId, Guid todoId, bool trackChanges) =>
         await FindByCondition(t => t.UserId.Equals(userId) && t.Id.Equals(todoId), trackChanges).SingleOrDefaultAsync();

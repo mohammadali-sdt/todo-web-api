@@ -1,11 +1,12 @@
 using Entities.Models;
 using Shared.DataTransferObjects;
+using Shared.RequestFeature;
 
 namespace Service.Contracts;
 
 public interface ITodoService
 {
-    Task<IEnumerable<TodoDto>> GetAllTodosAsync(Guid userId, bool trackChanges);
+    Task<(IEnumerable<TodoDto> todos, MetaData metaData)> GetAllTodosAsync(Guid userId, TodoParameters todoParameters ,bool trackChanges);
 
     Task<TodoDto> GetTodoAsync(Guid userId, Guid todoId, bool trackChanges);
 

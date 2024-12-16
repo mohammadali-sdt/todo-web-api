@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeature;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace TodoAPI.Presentation.Controllers;
 
@@ -17,11 +19,13 @@ public class TodosController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetTodosForUser(Guid userId)
+    public async Task<IActionResult> GetTodosForUser(Guid userId, [FromQuery] TodoParameters todoParameters)
     {
-        var todos = await _service.TodoService.GetAllTodosAsync(userId, trackChanges: false);
+        var pagedResult = await _service.TodoService.GetAllTodosAsync(userId, todoParameters, trackChanges: false);
 
-        return Ok(todos);
+        Response.Headers["X-Pagination"] = JsonSerializer.Serialize(pagedResult.metaData);
+        
+        return Ok(pagedResult.todos);
     }
 
     [HttpGet("{todoId:guid}", Name = "TodoById")]

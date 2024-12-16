@@ -3,6 +3,7 @@ using Contracs;
 using Entities.Exceptions;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using Repository.Extensions;
 using Shared.RequestFeature;
 
 namespace Repository;
@@ -16,8 +17,7 @@ public class TodoRepository: RepositoryBase<Todo>, ITodoRepository
         // great for small amount of data
         var todos = await FindByCondition(t => t.UserId.Equals(userId), trackChanges)
             .OrderBy(t => t.Title)
-            .Skip((todoParameters.PageNumber - 1) * todoParameters.PageSize)
-            .Take(todoParameters.PageSize)
+            .Search(todoParameters.SearchTerm)
             .ToListAsync();
         return PagedList<Todo>
             .ToPagedList(todos, todoParameters.PageNumber, todoParameters.PageSize);

@@ -4,11 +4,11 @@ public abstract class RequestParamters
 {
     private const int _maxPageSize = 50;
     public int PageNumber { get; set; } = 1;
+    public string? SearchTerm { get; set; }
+    
+    public string? OrderBy { get; set; }
 
     private int _pageSize = 10;
-    
-    public string? SearchTerm { get; set; }
-
     public int PageSize
     {
         get => _pageSize;

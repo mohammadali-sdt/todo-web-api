@@ -1,5 +1,8 @@
-using System.Linq.Expressions;
+using System.Reflection;
+using System.Text;
 using Entities.Models;
+using System.Linq.Dynamic.Core;
+using Repository.Extensions.Utility;
 
 namespace Repository.Extensions;
 
@@ -19,5 +22,17 @@ public static class UserRepositoryExtensions
             u.Name.Trim().ToLower().Contains(searchTerm) ||
             u.Email.Trim().ToLower().Contains(searchTerm)
             );
+    }
+
+    public static IQueryable<User> Sort(this IQueryable<User> users, string? orderQueryParams)
+    {
+        if (string.IsNullOrWhiteSpace(orderQueryParams))
+        {
+            return users.OrderBy(u => u.Name);
+        }
+
+        var queryBuilder = new OrderQueryStringBuilder<User>().BuildOrderQueryString(orderQueryParams);
+        
+        return string.IsNullOrWhiteSpace(queryBuilder) ? users.OrderBy(u => u.Name) : users.OrderBy(queryBuilder);
     }
 }

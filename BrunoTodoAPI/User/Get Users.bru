@@ -5,16 +5,17 @@ meta {
 }
 
 get {
-  url: {{URL}}:{{PORT}}/api/users?searchTerm=mr&minAge=28&pageNumber=1&pageSize=1
+  url: {{URL}}:{{PORT}}/api/users?orderBy=age desc,name
   body: none
   auth: none
 }
 
 params:query {
-  searchTerm: mr
-  minAge: 28
-  pageNumber: 1
-  pageSize: 1
+  orderBy: age desc,name
+  ~searchTerm: mr
+  ~minAge: 28
+  ~pageNumber: 1
+  ~pageSize: 1
 }
 
 headers {

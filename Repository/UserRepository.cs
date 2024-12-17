@@ -15,7 +15,7 @@ public class UserRepository : RepositoryBase<User>, IUserRepository
         var users = await FindAll(trackChanges)
             .FilterUsers(userParameters.MinAge, userParameters.MaxAge)
             .Search(userParameters.SearchTerm)
-            .OrderBy(u => u.Name)
+            .Sort(userParameters.OrderBy)
             .Skip((userParameters.PageNumber - 1) * userParameters.PageSize)
             .Take(userParameters.PageSize)
             .ToListAsync();

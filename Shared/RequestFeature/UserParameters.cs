@@ -7,4 +7,6 @@ public class UserParameters : RequestParamters
     public int MaxAge { get; set; } = int.MaxValue;
 
     public bool ValidateMaxAge => MaxAge > MinAge;
+
+    public UserParameters() => OrderBy = "name";
 }

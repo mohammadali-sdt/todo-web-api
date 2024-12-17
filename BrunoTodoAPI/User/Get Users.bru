@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: {{URL}}:{{PORT}}/api/users?orderBy=age desc,name
+  url: {{URL}}:{{PORT}}/api/users
   body: none
   auth: none
 }
 
 params:query {
-  orderBy: age desc,name
+  ~orderBy: age desc,name
   ~searchTerm: mr
   ~minAge: 28
   ~pageNumber: 1

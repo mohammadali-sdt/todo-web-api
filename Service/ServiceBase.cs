@@ -6,20 +6,23 @@ using Service.Contracts;
 
 namespace Service;
 
-public abstract class ServiceBase: IServiceBase
+public abstract class ServiceBase<T> : IServiceBase
 {
     protected IRepositoryManager RepositoryManager { get; }
     protected ILoggerManager Logger { get; }
-    protected IMapper Mapper { get; } 
+    protected IMapper Mapper { get; }
+
+    protected IDataShaper<T> DataShaper { get; }
 
 
-    public ServiceBase(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper)
+    public ServiceBase(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IDataShaper<T> dataShaper)
     {
         RepositoryManager = repositoryManager;
         Logger = logger;
         Mapper = mapper;
+        DataShaper = dataShaper;
     }
-    
+
     public async Task<Todo> CheckTodoIsExists(Guid userId, Guid todoId, bool trackChanges)
     {
         var todo = await RepositoryManager.Todo.GetTodoAsync(userId, todoId, trackChanges);

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using TodoAPI;
 using TodoAPI.Presentation.ActionFilters;
+using Shared.DataTransferObjects;
+using Service.DataShaping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,8 @@ builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<ValidationFilterAttribute>();
+builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
+builder.Services.AddScoped<IDataShaper<TodoDto>, DataShaper<TodoDto>>();
 // after .NET 8
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
@@ -47,7 +51,7 @@ var app = builder.Build();
 // after .NET 8
 app.UseExceptionHandler(opt => { });
 
-if(app.Environment.IsProduction())
+if (app.Environment.IsProduction())
 {
     app.UseHsts();
 }
@@ -122,4 +126,3 @@ NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
         .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters.OfType<NewtonsoftJsonPatchInputFormatter>()
         .First();
 }
-    

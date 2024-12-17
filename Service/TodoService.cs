@@ -8,14 +8,14 @@ using Shared.RequestFeature;
 
 namespace Service;
 
-public class TodoService : ServiceBase, ITodoService
+public class TodoService : ServiceBase<TodoDto>, ITodoService
 {
-    
-    public TodoService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper) : base(repositoryManager, logger, mapper)
+
+    public TodoService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IDataShaper<TodoDto> dataShaper) : base(repositoryManager, logger, mapper, dataShaper)
     {
     }
 
-    public async Task<(IEnumerable<TodoDto> todos, MetaData metaData)> GetAllTodosAsync(Guid userId, TodoParameters todoParameters ,bool trackChanges)
+    public async Task<(IEnumerable<TodoDto> todos, MetaData metaData)> GetAllTodosAsync(Guid userId, TodoParameters todoParameters, bool trackChanges)
     {
         await CheckUserIsExists(userId, trackChanges);
 
@@ -27,7 +27,7 @@ public class TodoService : ServiceBase, ITodoService
 
     }
 
-    public async  Task<TodoDto> GetTodoAsync(Guid userId, Guid todoId, bool trackChanges)
+    public async Task<TodoDto> GetTodoAsync(Guid userId, Guid todoId, bool trackChanges)
     {
         await CheckUserIsExists(userId, trackChanges);
 
@@ -41,7 +41,7 @@ public class TodoService : ServiceBase, ITodoService
     public async Task<TodoDto> CreateTodoAsync(TodoForCreationDto todo, Guid userId, bool trackChanges)
     {
         await CheckUserIsExists(userId, trackChanges);
-        
+
         var todoEntity = Mapper.Map<Entities.Models.Todo>(todo);
         RepositoryManager.Todo.CreateTodo(userId, todoEntity);
         await RepositoryManager.SaveAsync();
@@ -56,7 +56,7 @@ public class TodoService : ServiceBase, ITodoService
         await CheckUserIsExists(userId, trackChanges);
 
         var todoEntity = await CheckTodoIsExists(userId, todoId, trackChanges);
-        
+
         RepositoryManager.Todo.DeleteTodo(todoEntity);
         await RepositoryManager.SaveAsync();
     }
@@ -66,9 +66,9 @@ public class TodoService : ServiceBase, ITodoService
         await CheckUserIsExists(userId, userTrackChanges);
 
         var todoEntity = await CheckTodoIsExists(userId, todoId, todoTrackChanges);
-        
+
         Mapper.Map(todo, todoEntity);
-        
+
         await RepositoryManager.SaveAsync();
     }
 

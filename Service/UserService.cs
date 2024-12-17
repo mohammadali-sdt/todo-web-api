@@ -1,31 +1,34 @@
-﻿using AutoMapper;
+﻿using System.Dynamic;
+using AutoMapper;
 using Contracs;
 using Entities.Exceptions;
+using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using Shared.RequestFeature;
 
 namespace Service;
 
-public class UserService : ServiceBase, IUserService
+public class UserService : ServiceBase<UserDto>, IUserService
 {
-    public UserService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper): base(repositoryManager, logger, mapper)
+    public UserService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IDataShaper<UserDto> dataShaper) : base(repositoryManager, logger, mapper, dataShaper)
     {
     }
-    
-    public async Task<(IEnumerable<UserDto> users, MetaData metaData)> GetAllUsersAsync(UserParameters userParameters, bool trackChanges)
+
+    public async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetAllUsersAsync(UserParameters userParameters, bool trackChanges)
     {
         var users = await RepositoryManager.User.GetAllUsersAsync(userParameters, trackChanges);
 
         var usersDto = Mapper.Map<IEnumerable<UserDto>>(users);
+        var userDataShape = DataShaper.ShapeData(usersDto, userParameters.Fields);
 
-        return (usersDto, users.MetaData);
+        return (userDataShape, users.MetaData);
     }
 
     public async Task<UserDto> GetUserAsync(Guid userId, bool trackChanges)
     {
         var user = await CheckUserIsExists(userId, trackChanges);
-        
+
         var userDto = Mapper.Map<UserDto>(user);
         return userDto;
     }
@@ -33,7 +36,7 @@ public class UserService : ServiceBase, IUserService
     public async Task<UserDto> CreateUserAsync(UserForCreationDto user)
     {
         var userEntity = Mapper.Map<Entities.Models.User>(user);
-        
+
         RepositoryManager.User.CreateUser(userEntity);
         await RepositoryManager.SaveAsync();
 
@@ -72,15 +75,15 @@ public class UserService : ServiceBase, IUserService
 
         var userCollectionToReturn = Mapper.Map<IEnumerable<UserDto>>(userEntities);
         var ids = string.Join(",", userCollectionToReturn.Select(u => u.Id));
-        
-        
-        return(userCollectionToReturn, ids);
+
+
+        return (userCollectionToReturn, ids);
     }
 
     public async Task DeleteUserAsync(Guid userId, bool trackChanges)
     {
         var user = await CheckUserIsExists(userId, trackChanges);
-        
+
         RepositoryManager.User.DeleteUser(user);
         await RepositoryManager.SaveAsync();
     }
@@ -90,8 +93,8 @@ public class UserService : ServiceBase, IUserService
         var userEntity = await CheckUserIsExists(userId, trackChanges);
 
         Mapper.Map(userForUpdateDto, userEntity);
-        
+
         await RepositoryManager.SaveAsync();
     }
-    
+
 }

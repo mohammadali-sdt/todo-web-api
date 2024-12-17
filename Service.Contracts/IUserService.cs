@@ -1,3 +1,4 @@
+using System.Dynamic;
 using Shared.DataTransferObjects;
 using Shared.RequestFeature;
 
@@ -5,7 +6,7 @@ namespace Service.Contracts;
 
 public interface IUserService
 {
-    Task<(IEnumerable<UserDto> users, MetaData metaData)> GetAllUsersAsync(UserParameters userParameters, bool trackChanges);
+    Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetAllUsersAsync(UserParameters userParameters, bool trackChanges);
     Task<UserDto> GetUserAsync(Guid userId, bool trackChanges);
     Task<UserDto> CreateUserAsync(UserForCreationDto user);
 

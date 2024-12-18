@@ -9,6 +9,7 @@ using TodoAPI;
 using TodoAPI.Presentation.ActionFilters;
 using Shared.DataTransferObjects;
 using Service.DataShaping;
+using TodoAPI.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,9 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
 builder.Services.AddScoped<IDataShaper<TodoDto>, DataShaper<TodoDto>>();
+builder.Services.AddScoped<ValidateMediaTypeAttribute>();
+
+builder.Services.AddScoped<IUserLinks, UserLinks>();
 // after .NET 8
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
@@ -42,6 +46,8 @@ builder.Services.AddControllers(config =>
     }).AddXmlDataContractSerializerFormatters()
     .AddCustomCsvFormatter()
     .AddApplicationPart(typeof(TodoAPI.Presentation.AssemblyReference).Assembly);
+
+builder.Services.AddCustomMediaType();
 
 var app = builder.Build();
 // before .NET 8 we use this for global handling exception :

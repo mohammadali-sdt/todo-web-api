@@ -11,7 +11,7 @@ namespace Service;
 public class TodoService : ServiceBase<TodoDto>, ITodoService
 {
 
-    public TodoService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IDataShaper<TodoDto> dataShaper) : base(repositoryManager, logger, mapper, dataShaper)
+    public TodoService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper) : base(repositoryManager, logger, mapper)
     {
     }
 

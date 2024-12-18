@@ -6,7 +6,7 @@ namespace Contracs;
 
 public interface IDataShaper<T>
 {
-    IEnumerable<Entity> ShapeData(IEnumerable<T> entities, string? fieldsQueryString);
+    IEnumerable<ShapedEntity> ShapeData(IEnumerable<T> entities, string? fieldsQueryString);
 
-    Entity ShapeData(T entity, string? fieldsQueryString);
+    ShapedEntity ShapeData(T entity, string? fieldsQueryString);
 }

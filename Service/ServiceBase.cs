@@ -12,15 +12,11 @@ public abstract class ServiceBase<T> : IServiceBase
     protected ILoggerManager Logger { get; }
     protected IMapper Mapper { get; }
 
-    protected IDataShaper<T> DataShaper { get; }
-
-
-    public ServiceBase(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IDataShaper<T> dataShaper)
+    public ServiceBase(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper)
     {
         RepositoryManager = repositoryManager;
         Logger = logger;
         Mapper = mapper;
-        DataShaper = dataShaper;
     }
 
     public async Task<Todo> CheckTodoIsExists(Guid userId, Guid todoId, bool trackChanges)

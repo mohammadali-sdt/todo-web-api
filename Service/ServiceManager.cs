@@ -10,12 +10,12 @@ public sealed class ServiceManager : IServiceManager
     private readonly Lazy<IUserService> _userService;
     private readonly Lazy<ITodoService> _todoService;
 
-    public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IDataShaper<UserDto> userDtoDataShaper, IDataShaper<TodoDto> todoDtoDataShaper)
+    public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IUserLinks userLinks)
     {
 
-        _userService = new Lazy<IUserService>(() => new UserService(repositoryManager, logger, mapper, userDtoDataShaper));
+        _userService = new Lazy<IUserService>(() => new UserService(repositoryManager, logger, mapper, userLinks));
 
-        _todoService = new Lazy<ITodoService>(() => new TodoService(repositoryManager, logger, mapper, todoDtoDataShaper));
+        _todoService = new Lazy<ITodoService>(() => new TodoService(repositoryManager, logger, mapper));
     }
 
     public IUserService UserService => _userService.Value;

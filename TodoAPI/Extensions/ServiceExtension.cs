@@ -3,6 +3,8 @@ using LoggerService;
 using Service;
 using Service.Contracts;
 using Repository;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace TodoAPI.Extensions
 {
@@ -34,5 +36,23 @@ namespace TodoAPI.Extensions
 
         public static IMvcBuilder AddCustomCsvFormatter(this IMvcBuilder builder) =>
             builder.AddMvcOptions(config => config.OutputFormatters.Add(new CsvOutputFormatter()));
+
+        public static void AddCustomMediaType(this IServiceCollection services)
+        {
+            services.Configure<MvcOptions>(config =>
+            {
+                var systemTextJsonOutputFormatter = config.OutputFormatters.OfType<SystemTextJsonOutputFormatter>()?.FirstOrDefault();
+
+                if (systemTextJsonOutputFormatter != null)
+                {
+                    systemTextJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.vinix.hateoas+json");
+                }
+
+                var xmlOutputFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>()?.FirstOrDefault();
+
+                if (xmlOutputFormatter != null)
+                    xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.vinix.hateoas+xml");
+            });
+        }
     }
 }

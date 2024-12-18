@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Entities.LinkModels;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
@@ -20,13 +21,16 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
+    [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
     public async Task<IActionResult> GetUsers([FromQuery] UserParameters userParameters)
     {
-        var pagedResult = await _service.UserService.GetAllUsersAsync(userParameters,false);
+        System.Console.WriteLine(HttpContext.Items["AcceptHeaderMediaType"]);
+        var linkParms = new LinkParameters(userParameters, HttpContext);
+        var result = await _service.UserService.GetAllUsersAsync(linkParms, false);
 
-        Response.Headers["X-Pagination"] = JsonSerializer.Serialize(pagedResult.metaData);
-        
-        return Ok(pagedResult.users);
+        Response.Headers["X-Pagination"] = JsonSerializer.Serialize(result.metaData);
+
+        return result.linkResponse.HasLinks ? Ok(result.linkResponse.LinkedEntities) : Ok(result.linkResponse.ShapedEntities);
     }
 
     [HttpGet("{userId:guid}", Name = "UserById")]
@@ -43,11 +47,11 @@ public class UsersController : ControllerBase
         var createdUser = await _service.UserService.CreateUserAsync(user);
 
         return CreatedAtRoute("UserById", new { userId = createdUser.Id }, createdUser);
-        
+
     }
 
     [HttpGet("collection/({ids})", Name = "UserCollection")]
-    public async Task<IActionResult> GetUserCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
+    public async Task<IActionResult> GetUserCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
     {
         var users = await _service.UserService.GetByIdsAsync(ids, false);
 
@@ -66,18 +70,18 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> DeleteUser(Guid userId)
     {
         await _service.UserService.DeleteUserAsync(userId, false);
-    
+
         return NoContent();
     }
 
     [HttpPut("{userId:guid}")]
     [ServiceFilter(typeof(ValidationFilterAttribute))]
-    public async Task<IActionResult> UpdateUser ([FromBody] UserForUpdateDto userForUpdateDto, Guid userId)
+    public async Task<IActionResult> UpdateUser([FromBody] UserForUpdateDto userForUpdateDto, Guid userId)
     {
         await _service.UserService.UpdateUserAsync(userForUpdateDto, userId, true);
 
         return NoContent();
     }
-    
-    
+
+
 }

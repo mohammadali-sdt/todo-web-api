@@ -16,7 +16,7 @@ public class DataShaper<T> : IDataShaper<T>
         _properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
     }
 
-    public IEnumerable<Entity> ShapeData(IEnumerable<T> entities, string? fieldsQueryString)
+    public IEnumerable<ShapedEntity> ShapeData(IEnumerable<T> entities, string? fieldsQueryString)
     {
         IEnumerable<PropertyInfo> requiredProperties = GetRequiredProperties(fieldsQueryString);
 
@@ -24,7 +24,7 @@ public class DataShaper<T> : IDataShaper<T>
 
     }
 
-    public Entity ShapeData(T entity, string? fieldsQueryString)
+    public ShapedEntity ShapeData(T entity, string? fieldsQueryString)
     {
         IEnumerable<PropertyInfo> requiredProperties = GetRequiredProperties(fieldsQueryString);
 
@@ -59,9 +59,9 @@ public class DataShaper<T> : IDataShaper<T>
 
     }
 
-    private IEnumerable<Entity> FetchData(IEnumerable<T> entities, IEnumerable<PropertyInfo> requiredProperties)
+    private IEnumerable<ShapedEntity> FetchData(IEnumerable<T> entities, IEnumerable<PropertyInfo> requiredProperties)
     {
-        var resultData = new List<Entity>();
+        var resultData = new List<ShapedEntity>();
 
         foreach (var entity in entities)
         {
@@ -72,15 +72,18 @@ public class DataShaper<T> : IDataShaper<T>
         return resultData;
     }
 
-    private Entity FetchEntity(T entity, IEnumerable<PropertyInfo> requiredProperties)
+    private ShapedEntity FetchEntity(T entity, IEnumerable<PropertyInfo> requiredProperties)
     {
-        var resultObject = new Entity();
+        var resultObject = new ShapedEntity();
 
         foreach (var property in requiredProperties)
         {
             var entityPropertyValue = property.GetValue(entity);
-            resultObject.TryAdd(property.Name, entityPropertyValue);
+            resultObject.Entity.TryAdd(property.Name, entityPropertyValue);
         }
+
+        var objectIdProperty = entity.GetType().GetProperty("Id");
+        resultObject.Id = (Guid)objectIdProperty.GetValue(entity);
 
         return resultObject;
     }

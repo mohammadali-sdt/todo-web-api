@@ -2,6 +2,7 @@
 using AutoMapper;
 using Contracs;
 using Entities.Exceptions;
+using Entities.LinkModels;
 using Entities.Models;
 using Service.Contracts;
 using Shared.DataTransferObjects;
@@ -11,18 +12,22 @@ namespace Service;
 
 public class UserService : ServiceBase<UserDto>, IUserService
 {
-    public UserService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IDataShaper<UserDto> dataShaper) : base(repositoryManager, logger, mapper, dataShaper)
+
+    private readonly IUserLinks _userLinks;
+
+    public UserService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IUserLinks userLinks) : base(repositoryManager, logger, mapper)
     {
+        _userLinks = userLinks;
     }
 
-    public async Task<(IEnumerable<Entity> users, MetaData metaData)> GetAllUsersAsync(UserParameters userParameters, bool trackChanges)
+    public async Task<(LinkResponse linkResponse, MetaData metaData)> GetAllUsersAsync(LinkParameters linkParameters, bool trackChanges)
     {
-        var users = await RepositoryManager.User.GetAllUsersAsync(userParameters, trackChanges);
+        var users = await RepositoryManager.User.GetAllUsersAsync(linkParameters.userParameters, trackChanges);
 
         var usersDto = Mapper.Map<IEnumerable<UserDto>>(users);
-        var userDataShape = DataShaper.ShapeData(usersDto, userParameters.Fields);
+        var links = _userLinks.TryGenerateLinks(userDto: usersDto, fields: linkParameters.userParameters.Fields ?? "", httpContext: linkParameters.HttpContext);
 
-        return (userDataShape, users.MetaData);
+        return (linkResponse: links, users.MetaData);
     }
 
     public async Task<UserDto> GetUserAsync(Guid userId, bool trackChanges)

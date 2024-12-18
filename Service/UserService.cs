@@ -15,7 +15,7 @@ public class UserService : ServiceBase<UserDto>, IUserService
     {
     }
 
-    public async Task<(IEnumerable<ExpandoObject> users, MetaData metaData)> GetAllUsersAsync(UserParameters userParameters, bool trackChanges)
+    public async Task<(IEnumerable<Entity> users, MetaData metaData)> GetAllUsersAsync(UserParameters userParameters, bool trackChanges)
     {
         var users = await RepositoryManager.User.GetAllUsersAsync(userParameters, trackChanges);
 

@@ -1,11 +1,12 @@
 using System;
 using System.Dynamic;
+using Entities.Models;
 
 namespace Contracs;
 
 public interface IDataShaper<T>
 {
-    IEnumerable<ExpandoObject> ShapeData(IEnumerable<T> entities, string? fieldsQueryString);
+    IEnumerable<Entity> ShapeData(IEnumerable<T> entities, string? fieldsQueryString);
 
-    ExpandoObject ShapeData(T entity, string? fieldsQueryString);
+    Entity ShapeData(T entity, string? fieldsQueryString);
 }

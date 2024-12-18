@@ -2,6 +2,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using Contracs;
+using Entities.Models;
 
 namespace Service.DataShaping;
 
@@ -15,7 +16,7 @@ public class DataShaper<T> : IDataShaper<T>
         _properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
     }
 
-    public IEnumerable<ExpandoObject> ShapeData(IEnumerable<T> entities, string? fieldsQueryString)
+    public IEnumerable<Entity> ShapeData(IEnumerable<T> entities, string? fieldsQueryString)
     {
         IEnumerable<PropertyInfo> requiredProperties = GetRequiredProperties(fieldsQueryString);
 
@@ -23,7 +24,7 @@ public class DataShaper<T> : IDataShaper<T>
 
     }
 
-    public ExpandoObject ShapeData(T entity, string? fieldsQueryString)
+    public Entity ShapeData(T entity, string? fieldsQueryString)
     {
         IEnumerable<PropertyInfo> requiredProperties = GetRequiredProperties(fieldsQueryString);
 
@@ -58,9 +59,9 @@ public class DataShaper<T> : IDataShaper<T>
 
     }
 
-    private IEnumerable<ExpandoObject> FetchData(IEnumerable<T> entities, IEnumerable<PropertyInfo> requiredProperties)
+    private IEnumerable<Entity> FetchData(IEnumerable<T> entities, IEnumerable<PropertyInfo> requiredProperties)
     {
-        var resultData = new List<ExpandoObject>();
+        var resultData = new List<Entity>();
 
         foreach (var entity in entities)
         {
@@ -71,9 +72,9 @@ public class DataShaper<T> : IDataShaper<T>
         return resultData;
     }
 
-    private ExpandoObject FetchEntity(T entity, IEnumerable<PropertyInfo> requiredProperties)
+    private Entity FetchEntity(T entity, IEnumerable<PropertyInfo> requiredProperties)
     {
-        var resultObject = new ExpandoObject();
+        var resultObject = new Entity();
 
         foreach (var property in requiredProperties)
         {

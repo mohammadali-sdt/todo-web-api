@@ -23,12 +23,14 @@ builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
+builder.Services.ConfigureApiVersioning();
+
 builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.AddScoped<IDataShaper<UserDto>, DataShaper<UserDto>>();
 builder.Services.AddScoped<IDataShaper<TodoDto>, DataShaper<TodoDto>>();
 builder.Services.AddScoped<ValidateMediaTypeAttribute>();
-
 builder.Services.AddScoped<IUserLinks, UserLinks>();
 // after .NET 8
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

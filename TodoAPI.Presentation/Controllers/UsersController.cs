@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Asp.Versioning;
 using Entities.LinkModels;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
@@ -9,6 +10,7 @@ using TodoAPI.Presentation.ModelBinder;
 
 namespace TodoAPI.Presentation.Controllers;
 
+[ApiVersion("1.0")]
 [Route("api/users")]
 [ApiController]
 public class UsersController : ControllerBase
@@ -31,7 +33,6 @@ public class UsersController : ControllerBase
     [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
     public async Task<IActionResult> GetUsers([FromQuery] UserParameters userParameters)
     {
-        System.Console.WriteLine(HttpContext.Items["AcceptHeaderMediaType"]);
         var linkParms = new LinkParameters(userParameters, HttpContext);
         var result = await _service.UserService.GetAllUsersAsync(linkParms, false);
 

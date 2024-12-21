@@ -19,12 +19,13 @@ public class TodosController : ControllerBase
     }
 
     [HttpGet]
+    [HttpHead]
     public async Task<IActionResult> GetTodosForUser(Guid userId, [FromQuery] TodoParameters todoParameters)
     {
         var pagedResult = await _service.TodoService.GetAllTodosAsync(userId, todoParameters, trackChanges: false);
 
         Response.Headers["X-Pagination"] = JsonSerializer.Serialize(pagedResult.metaData);
-        
+
         return Ok(pagedResult.todos);
     }
 
@@ -65,7 +66,7 @@ public class TodosController : ControllerBase
 
         if (!ModelState.IsValid)
             return UnprocessableEntity(ModelState);
-        
+
         await _service.TodoService.UpdateTodoAsync(todo, userId, todoId, userTrackChanges: false, todoTrackChanges: true);
 
         return NoContent();
@@ -75,19 +76,19 @@ public class TodosController : ControllerBase
     public async Task<IActionResult> PartiallyUpdateTodo(Guid userId, Guid todoId,
         [FromBody] JsonPatchDocument<TodoForUpdateDto>? todoPatch)
     {
-        if (todoPatch is null) 
+        if (todoPatch is null)
             return BadRequest("todoPatch object is null.");
 
         var result = await _service.TodoService.PartiallyUpdateTodoAsync(userId, todoId, true, false);
-        
+
         todoPatch.ApplyTo(result.todoForUpdateDto, ModelState);
 
         TryValidateModel(result.todoForUpdateDto);
-        
+
         if (!ModelState.IsValid)
             return UnprocessableEntity(ModelState);
-            
-        
+
+
         await _service.TodoService.SavePartiallyUpdateTodoAsync(result.todoForUpdateDto, result.todoEntity);
 
         return NoContent();

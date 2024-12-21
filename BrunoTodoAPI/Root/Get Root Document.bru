@@ -1,0 +1,15 @@
+meta {
+  name: Get Root Document
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{URL}}:{{PORT}}/api
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/vnd.vinix.apiroot+json
+}

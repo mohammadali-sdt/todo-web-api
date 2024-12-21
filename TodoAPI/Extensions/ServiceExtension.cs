@@ -46,12 +46,18 @@ namespace TodoAPI.Extensions
                 if (systemTextJsonOutputFormatter != null)
                 {
                     systemTextJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.vinix.hateoas+json");
+                    systemTextJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.vinix.apiroot+json");
                 }
 
                 var xmlOutputFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>()?.FirstOrDefault();
 
                 if (xmlOutputFormatter != null)
+                {
+
                     xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.vinix.hateoas+xml");
+                    xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.vinix.apiroot+xml");
+                }
+
             });
         }
     }

@@ -27,7 +27,7 @@ public class UsersController : ControllerBase
         return Ok();
     }
 
-    [HttpGet]
+    [HttpGet(Name = "GetUsers")]
     [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
     public async Task<IActionResult> GetUsers([FromQuery] UserParameters userParameters)
     {
@@ -47,7 +47,7 @@ public class UsersController : ControllerBase
         return Ok(user);
     }
 
-    [HttpPost]
+    [HttpPost(Name = "CreateUser")]
     [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> CreateUser([FromBody] UserForCreationDto user)
     {

@@ -20,6 +20,13 @@ public class UsersController : ControllerBase
         _service = service;
     }
 
+    [HttpOptions]
+    public IActionResult GetUsersOptions()
+    {
+        Response.Headers["Allow"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS";
+        return Ok();
+    }
+
     [HttpGet]
     [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
     public async Task<IActionResult> GetUsers([FromQuery] UserParameters userParameters)

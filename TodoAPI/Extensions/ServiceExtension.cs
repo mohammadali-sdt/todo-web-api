@@ -5,6 +5,7 @@ using Service.Contracts;
 using Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Asp.Versioning;
 
 namespace TodoAPI.Extensions
 {
@@ -60,5 +61,19 @@ namespace TodoAPI.Extensions
 
             });
         }
+
+        public static void ConfigureApiVersioning(this IServiceCollection services)
+        {
+            services.AddApiVersioning(opt =>
+            {
+                opt.ReportApiVersions = true;
+                opt.AssumeDefaultVersionWhenUnspecified = true;
+                opt.DefaultApiVersion = new ApiVersion(1, 0);
+                opt.ApiVersionReader = new HeaderApiVersionReader("api-version");
+            });
+        }
+
+
     }
+
 }

@@ -78,6 +78,10 @@ namespace TodoAPI.Extensions
             services.AddResponseCaching();
         }
 
+        public static void ConfigureOutputCache(this IServiceCollection services)
+        {
+            services.AddOutputCache();
+        }
     }
 
 }

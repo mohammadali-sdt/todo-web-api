@@ -73,6 +73,10 @@ namespace TodoAPI.Extensions
             }).AddMvc();
         }
 
+        public static void ConfigureResponseCache(this IServiceCollection services)
+        {
+            services.AddResponseCaching();
+        }
 
     }
 

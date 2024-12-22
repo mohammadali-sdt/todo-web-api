@@ -13,6 +13,7 @@ namespace TodoAPI.Presentation.Controllers;
 [ApiVersion("1.0")]
 [Route("api/users")]
 [ApiController]
+[ResponseCache(CacheProfileName = "120SecondsDuration")]
 public class UsersController : ControllerBase
 {
     private readonly IServiceManager _service;

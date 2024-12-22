@@ -31,6 +31,7 @@ public class UsersController : ControllerBase
 
     [HttpGet(Name = "GetUsers")]
     [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
+    [ResponseCache(Duration = 60)]
     public async Task<IActionResult> GetUsers([FromQuery] UserParameters userParameters)
     {
         var linkParms = new LinkParameters(userParameters, HttpContext);

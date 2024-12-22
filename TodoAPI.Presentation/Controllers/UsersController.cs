@@ -2,6 +2,7 @@ using System.Text.Json;
 using Asp.Versioning;
 using Entities.LinkModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using Shared.RequestFeature;
@@ -32,7 +33,8 @@ public class UsersController : ControllerBase
 
     [HttpGet(Name = "GetUsers")]
     [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
-    [ResponseCache(Duration = 60)]
+    // [ResponseCache(Duration = 60)]
+    [OutputCache(Duration = 20)]
     public async Task<IActionResult> GetUsers([FromQuery] UserParameters userParameters)
     {
         var linkParms = new LinkParameters(userParameters, HttpContext);

@@ -80,7 +80,13 @@ namespace TodoAPI.Extensions
 
         public static void ConfigureOutputCache(this IServiceCollection services)
         {
-            services.AddOutputCache();
+            services.AddOutputCache(options =>
+            {
+                options.AddPolicy("120SecondsDurationPolicy", builder =>
+                {
+                    builder.Expire(TimeSpan.FromSeconds(120));
+                });
+            });
         }
     }
 

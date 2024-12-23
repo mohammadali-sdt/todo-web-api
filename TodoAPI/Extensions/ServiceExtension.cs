@@ -107,6 +107,22 @@ namespace TodoAPI.Extensions
                         Window = TimeSpan.FromMinutes(1)
                     });
                 });
+
+
+                opt.OnRejected = async (context, token) =>
+                {
+                    context.HttpContext.Response.StatusCode = 429;
+
+                    if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+                    {
+                        await context.HttpContext.Response.WriteAsync($"Too many requests. Please try again after {retryAfter.TotalSeconds} second(s).");
+                    }
+
+                    else
+                    {
+                        await context.HttpContext.Response.WriteAsync("Too many requests. Please try again later.", token);
+                    }
+                };
             });
         }
     }

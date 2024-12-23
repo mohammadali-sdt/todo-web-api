@@ -20,8 +20,9 @@ params:query {
 }
 
 headers {
-  Accept: application/vnd.vinix.hateoas+json
-  api-version: 1.0
+  Accept: application/json
+  ~Accept: application/vnd.vinix.hateoas+json
+  ~api-version: 1.0
   ~Accept: text/csv
   ~Accept: text/xml
 }

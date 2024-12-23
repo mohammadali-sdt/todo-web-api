@@ -6,6 +6,7 @@ using Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Asp.Versioning;
+using System.Threading.RateLimiting;
 
 namespace TodoAPI.Extensions
 {
@@ -85,6 +86,26 @@ namespace TodoAPI.Extensions
                 options.AddPolicy("120SecondsDurationPolicy", builder =>
                 {
                     builder.Expire(TimeSpan.FromSeconds(120));
+                });
+            });
+        }
+
+
+        public static void ConfigureRateLimiting(this IServiceCollection services)
+        {
+
+            services.AddRateLimiter(opt =>
+            {
+
+                opt.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+                {
+                    return RateLimitPartition.GetFixedWindowLimiter("GlobalLimiter", partition => new FixedWindowRateLimiterOptions
+                    {
+                        AutoReplenishment = true,
+                        PermitLimit = 5,
+                        QueueLimit = 0,
+                        Window = TimeSpan.FromMinutes(1)
+                    });
                 });
             });
         }

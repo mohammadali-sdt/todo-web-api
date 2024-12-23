@@ -26,6 +26,7 @@ builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.ConfigureApiVersioning();
 // builder.Services.ConfigureResponseCache();
 builder.Services.ConfigureOutputCache();
+builder.Services.ConfigureRateLimiting();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -75,6 +76,8 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
+
+app.UseRateLimiter();
 app.UseCors("CorsPolicy");
 // app.UseResponseCaching();
 app.UseOutputCache();

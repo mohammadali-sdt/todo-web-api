@@ -10,12 +10,13 @@ public class MappingProfile : Profile
     {
         // CreateMap<User, UserDto>()
         //     .ForCtorParam("FullName", opt => opt.MapFrom(u => $"{u.Name}({u.Username})"));
-        
+
         CreateMap<User, UserDto>();
         CreateMap<Todo, TodoDto>();
         CreateMap<UserForCreationDto, User>();
         CreateMap<TodoForCreationDto, Todo>();
         CreateMap<TodoForUpdateDto, Todo>().ReverseMap();
         CreateMap<UserForUpdateDto, User>();
+        CreateMap<UserForRegisterationDto, User>();
     }
 }

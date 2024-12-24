@@ -15,6 +15,7 @@ namespace Repository
         {
             base.OnModelCreating(modelBuilder);
 
+            // modelBuilder.ApplyConfiguration(new RoleConfiguration());
             // modelBuilder.ApplyConfiguration(new UserConfiguration());
             // modelBuilder.ApplyConfiguration(new TodoConfiguration());
         }

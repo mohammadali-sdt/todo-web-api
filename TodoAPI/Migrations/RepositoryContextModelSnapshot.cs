@@ -43,7 +43,7 @@ namespace TodoAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Todos");
+                    b.ToTable("Todos", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.User", b =>

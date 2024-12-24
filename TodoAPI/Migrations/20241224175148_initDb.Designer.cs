@@ -11,8 +11,8 @@ using Repository;
 namespace TodoAPI.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20241224171316_FreshMigrationWithIdentityTables")]
-    partial class FreshMigrationWithIdentityTables
+    [Migration("20241224175148_initDb")]
+    partial class initDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

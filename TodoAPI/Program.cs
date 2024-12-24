@@ -10,6 +10,8 @@ using TodoAPI.Presentation.ActionFilters;
 using Shared.DataTransferObjects;
 using Service.DataShaping;
 using TodoAPI.Utility;
+using Microsoft.AspNetCore.Identity;
+using Repository.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +63,14 @@ var app = builder.Build();
 // before .NET 8 we use this for global handling exception :
 // var logger = app.Services.GetRequiredService<ILoggerManager>();
 // app.ConfigureExceptionHandler(logger);
+
+
+// using (var scope = app.Services.CreateScope())
+// {
+//     var services = scope.ServiceProvider;
+//     var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+//     await roleManager.SeedRolesAsync();
+// }
 
 // after .NET 8
 app.UseExceptionHandler(opt => { });

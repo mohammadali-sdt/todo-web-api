@@ -1,19 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace Entities.Models;
-public class User
+public class User : IdentityUser<Guid>
 {
 
     [Column("UserId")]
-    public Guid Id { get; set; }
+    public override Guid Id { get; set; }
 
     [Required(ErrorMessage = "Username is a required field")]
     public string? Username { get; set; }
 
     [Required(ErrorMessage = "Email is a required field.")]
     [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
-    public string? Email { get; set; }
+    public override string? Email { get; set; }
 
     [Required(ErrorMessage = "Password is a required field.")]
     [MaxLength(64, ErrorMessage = "Maximum length for the Password is 64 characters.")]

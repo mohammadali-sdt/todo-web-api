@@ -27,6 +27,8 @@ builder.Services.ConfigureApiVersioning();
 // builder.Services.ConfigureResponseCache();
 builder.Services.ConfigureOutputCache();
 builder.Services.ConfigureRateLimiting();
+builder.Services.AddAuthentication();
+builder.Services.ConfigureIdentity();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -82,6 +84,7 @@ app.UseCors("CorsPolicy");
 // app.UseResponseCaching();
 app.UseOutputCache();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 

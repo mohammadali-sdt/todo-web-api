@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Asp.Versioning;
 using System.Threading.RateLimiting;
+using Entities.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace TodoAPI.Extensions
 {
@@ -125,6 +127,25 @@ namespace TodoAPI.Extensions
                     }
                 };
             });
+        }
+
+
+        public static void ConfigureIdentity(this IServiceCollection services)
+        {
+
+            services.AddIdentity<User, IdentityRole>(opt =>
+            {
+                opt.Password.RequireDigit = true;
+                opt.Password.RequireLowercase = true;
+                opt.Password.RequireUppercase = true;
+                opt.Password.RequireNonAlphanumeric = true;
+                opt.Password.RequiredLength = 8;
+                opt.User.RequireUniqueEmail = true;
+                opt.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+            })
+            .AddEntityFrameworkStores<RepositoryContext>()
+            .AddDefaultTokenProviders();
+
         }
     }
 

@@ -10,7 +10,7 @@ public class User : IdentityUser<Guid>
     public override Guid Id { get; set; }
 
     [Required(ErrorMessage = "Username is a required field")]
-    public string? Username { get; set; }
+    public override string? UserName { get; set; }
 
     [Required(ErrorMessage = "Email is a required field.")]
     [EmailAddress(ErrorMessage = "Please enter a valid email address.")]

@@ -15,11 +15,12 @@ namespace Repository
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfiguration(new UserConfiguration());
-            modelBuilder.ApplyConfiguration(new TodoConfiguration());
+            // modelBuilder.ApplyConfiguration(new UserConfiguration());
+            // modelBuilder.ApplyConfiguration(new TodoConfiguration());
         }
 
-        public DbSet<User>? Users { get; set; }
+        //
+        // public DbSet<User>? Users { get; set; }
         public DbSet<Todo>? Todos { get; set; }
     }
 }

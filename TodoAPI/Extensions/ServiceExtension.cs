@@ -133,7 +133,7 @@ namespace TodoAPI.Extensions
         public static void ConfigureIdentity(this IServiceCollection services)
         {
 
-            services.AddIdentity<User, IdentityRole>(opt =>
+            services.AddIdentity<User, IdentityRole<Guid>>(opt =>
             {
                 opt.Password.RequireDigit = true;
                 opt.Password.RequireLowercase = true;

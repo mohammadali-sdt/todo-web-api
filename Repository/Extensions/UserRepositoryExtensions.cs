@@ -18,7 +18,7 @@ public static class UserRepositoryExtensions
         if (string.IsNullOrWhiteSpace(searchTerm)) return users;
         var cleanSearchTerm = searchTerm.Trim().ToLower();
         return users.Where(u =>
-            u.Username.Trim().ToLower().Contains(searchTerm) ||
+            u.UserName.Trim().ToLower().Contains(searchTerm) ||
             u.Name.Trim().ToLower().Contains(searchTerm) ||
             u.Email.Trim().ToLower().Contains(searchTerm)
             );
@@ -32,7 +32,7 @@ public static class UserRepositoryExtensions
         }
 
         var queryBuilder = new OrderQueryStringBuilder<User>().BuildOrderQueryString(orderQueryParams);
-        
+
         return string.IsNullOrWhiteSpace(queryBuilder) ? users.OrderBy(u => u.Name) : users.OrderBy(queryBuilder);
     }
 }

@@ -58,10 +58,12 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
 
         _user = userCredential.Contains('@') ? await _userManager.FindByEmailAsync(userCredential) : await _userManager.FindByNameAsync(userCredential);
 
-        if (_user == null)
-            return false;
 
-        var result = await _userManager.CheckPasswordAsync(_user, userForAuthenticateDto.Password);
+
+        var result = _user != null && await _userManager.CheckPasswordAsync(_user, userForAuthenticateDto.Password);
+
+        if (!result)
+            Logger.LogWarn($"{nameof(ValidateUser)}: Authentication failed. Wrong username or password");
 
         return result;
 

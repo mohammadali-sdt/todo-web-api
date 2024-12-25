@@ -10,7 +10,7 @@ using Shared.RequestFeature;
 
 namespace Service;
 
-public class UserService : ServiceBase<UserDto>, IUserService
+public class UserService : ServiceBase, IUserService
 {
 
     private readonly IUserLinks _userLinks;

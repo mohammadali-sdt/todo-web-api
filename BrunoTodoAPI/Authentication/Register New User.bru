@@ -1,0 +1,22 @@
+meta {
+  name: Register New User
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{URL}}:{{PORT}}/api/authentication/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "patrick_star",
+    "email": "patrick@patrick.com",
+    "password": "p*123456789P*",
+    "passwordConfirm": "p*123456789P*",
+    "age": 32,
+    "name": "Patrick Star"
+  }
+}

@@ -4,4 +4,5 @@ public interface IServiceManager
 {
     IUserService UserService { get; }
     ITodoService TodoService { get; }
+    IAuthenticationService AuthenticationService { get; }
 }

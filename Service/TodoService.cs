@@ -8,7 +8,7 @@ using Shared.RequestFeature;
 
 namespace Service;
 
-public class TodoService : ServiceBase<TodoDto>, ITodoService
+public class TodoService : ServiceBase, ITodoService
 {
 
     public TodoService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper) : base(repositoryManager, logger, mapper)

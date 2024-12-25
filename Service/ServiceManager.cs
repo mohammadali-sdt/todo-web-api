@@ -27,7 +27,7 @@ public sealed class ServiceManager : IServiceManager
 
     public IUserService UserService => _userService.Value;
     public ITodoService TodoService => _todoService.Value;
-
+    
     public IAuthenticationService AuthenticationService => _authenticationService.Value;
 
 }

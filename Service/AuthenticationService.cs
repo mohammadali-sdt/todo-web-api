@@ -30,11 +30,16 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
             throw new PasswordsDoesNotMatch();
         }
 
+        if (userForRegisterationDto.Password is null)
+        {
+            throw new PasswordsDoesNotMatch();
+        }
+
         // map userRegisterationDto to user model
         var user = Mapper.Map<User>(userForRegisterationDto);
 
         // Create User and save to DB
-        var result = await _userManager.CreateAsync(user);
+        var result = await _userManager.CreateAsync(user, userForRegisterationDto.Password);
 
         return result;
     }

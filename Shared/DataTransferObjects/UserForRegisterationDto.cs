@@ -5,7 +5,7 @@ namespace Shared.DataTransferObjects;
 public record class UserForRegisterationDto
 {
     [Required(ErrorMessage = "Username is a required field")]
-    public string? Username { get; set; }
+    public string? UserName { get; set; }
 
     [Required(ErrorMessage = "Email is a required field.")]
     [EmailAddress(ErrorMessage = "Please enter a valid email address.")]

@@ -7,4 +7,6 @@ namespace Service.Contracts;
 public interface IAuthenticationService
 {
     Task<IdentityResult> RegisterUser(UserForRegisterationDto userForRegisterationDto);
+    Task<bool> ValidateUser(UserForAuthenticateDto userForAuthenticateDto);
+    Task<string> CreateToken();
 }

@@ -18,7 +18,7 @@ public sealed class ServiceManager : IServiceManager
     public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IUserLinks userLinks, UserManager<User> userManager, IConfiguration configuration)
     {
 
-        _userService = new Lazy<IUserService>(() => new UserService(repositoryManager, logger, mapper, userLinks));
+        _userService = new Lazy<IUserService>(() => new UserService(repositoryManager, logger, mapper, userLinks, userManager));
 
         _todoService = new Lazy<ITodoService>(() => new TodoService(repositoryManager, logger, mapper));
 
@@ -27,7 +27,7 @@ public sealed class ServiceManager : IServiceManager
 
     public IUserService UserService => _userService.Value;
     public ITodoService TodoService => _todoService.Value;
-    
+
     public IAuthenticationService AuthenticationService => _authenticationService.Value;
 
 }

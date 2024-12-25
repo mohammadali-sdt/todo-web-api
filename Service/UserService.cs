@@ -4,6 +4,7 @@ using Contracs;
 using Entities.Exceptions;
 using Entities.LinkModels;
 using Entities.Models;
+using Microsoft.AspNetCore.Identity;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 using Shared.RequestFeature;
@@ -14,10 +15,12 @@ public class UserService : ServiceBase, IUserService
 {
 
     private readonly IUserLinks _userLinks;
+    private readonly UserManager<User> _userManager;
 
-    public UserService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IUserLinks userLinks) : base(repositoryManager, logger, mapper)
+    public UserService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, IUserLinks userLinks, UserManager<User> userManager) : base(repositoryManager, logger, mapper)
     {
         _userLinks = userLinks;
+        _userManager = userManager;
     }
 
     public async Task<(LinkResponse linkResponse, MetaData metaData)> GetAllUsersAsync(LinkParameters linkParameters, bool trackChanges)
@@ -40,10 +43,16 @@ public class UserService : ServiceBase, IUserService
 
     public async Task<UserDto> CreateUserAsync(UserForCreationDto user)
     {
-        var userEntity = Mapper.Map<Entities.Models.User>(user);
+        var userEntity = Mapper.Map<User>(user);
 
-        RepositoryManager.User.CreateUser(userEntity);
-        await RepositoryManager.SaveAsync();
+        // RepositoryManager.User.CreateUser(userEntity);
+        // await RepositoryManager.SaveAsync();
+        var result = await _userManager.CreateAsync(userEntity, user.Password);
+
+        if (result.Succeeded && user.Roles != null)
+        {
+            await _userManager.AddToRolesAsync(userEntity, user.Roles);
+        }
 
         var userToReturn = Mapper.Map<UserDto>(userEntity);
 

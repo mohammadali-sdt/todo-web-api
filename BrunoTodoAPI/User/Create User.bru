@@ -7,15 +7,22 @@ meta {
 post {
   url: {{URL}}:{{PORT}}/api/users
   body: json
-  auth: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoic3BvbmdlYm9iX3NxdWFyZXBhbnRzIiwiZXhwIjoxNzM1MTQ0MjA4LCJpc3MiOiJKdXN0Rm9yRnVuOkQiLCJhdWQiOiJsb2NhbGhvc3Q6NTAwMSJ9.v9brCTiUVaJcBpiMTvXNhkEVDJZJECm3mOMGga0c9F4
 }
 
 body:json {
   {
-    "name": "Patrick 2",
-    "email": "patrick2@gmail.com",
-    "username": "patrick_star2",
-    "password": "patrickforever2",
-    "age": 33
+    "name": "Mr. Krabs",
+    "email": "mr.krabs@krustykrab.com",
+    "username": "krustykrab",
+    "password": "0Mr.KrustyKrabs!1",
+    "age": 50,
+    "roles": [
+      "Administrator"
+    ]
   }
 }

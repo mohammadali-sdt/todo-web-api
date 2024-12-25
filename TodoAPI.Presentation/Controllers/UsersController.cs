@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Asp.Versioning;
 using Entities.LinkModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Service.Contracts;
@@ -16,6 +17,7 @@ namespace TodoAPI.Presentation.Controllers;
 [ApiController]
 // [ResponseCache(CacheProfileName = "120SecondsDuration")]
 [OutputCache(PolicyName = "120SecondsDurationPolicy")]
+[Authorize(Roles = "Administrator")]
 public class UsersController : ControllerBase
 {
     private readonly IServiceManager _service;

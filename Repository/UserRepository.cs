@@ -29,11 +29,12 @@ public class UserRepository : RepositoryBase<User>, IUserRepository
         await FindByCondition(u => u.Id.Equals(userId), trackChanges).SingleOrDefaultAsync();
 
     public void CreateUser(User user) => Create(user);
-    
-    public async Task<IEnumerable<User>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges) {
+
+    public async Task<IEnumerable<User>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges)
+    {
         return await FindByCondition(u => ids.Contains(u.Id), trackChanges).ToListAsync();
     }
 
     public void DeleteUser(User user) => Delete(user);
-    
+
 }

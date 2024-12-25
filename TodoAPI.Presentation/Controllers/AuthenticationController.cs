@@ -33,8 +33,6 @@ public class AuthenticationController : ControllerBase
             return BadRequest(ModelState);
         }
 
-
-
         return StatusCode(201);
     }
 }

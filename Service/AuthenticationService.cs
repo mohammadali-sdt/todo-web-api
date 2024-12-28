@@ -85,7 +85,7 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
         }
 
         await _userManager.UpdateAsync(_user);
-        
+
         var accessToken = tokenHandler.WriteToken(tokenOptions);
         var tokenDto = new TokenDto() { AccessToken = accessToken, RefreshToken = refreshToken };
         return tokenDto;
@@ -108,7 +108,7 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
         var environmentVar = Environment.GetEnvironmentVariable("SECRET_TOKEN_KEY");
 
         if (string.IsNullOrWhiteSpace(environmentVar)) throw new Exception("Environment Variable is null");
-        
+
         var secretValue = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(environmentVar));
         var tokenValidationParameter = new TokenValidationParameters()
         {
@@ -171,7 +171,7 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
     private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
-        
+
 
         var expiresInMinutes = Convert.ToDouble(jwtSettings["expire"]);
         var expiresInDate = DateTime.Now.AddMinutes(expiresInMinutes);
@@ -185,5 +185,21 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
         );
 
         return jwtOptions;
+    }
+
+    public async Task<TokenDto> RefreshToken(TokenDto tokenDto)
+    {
+
+        var principal = GetPrincipalFromExpiredToken(tokenDto.AccessToken);
+
+        var user = await _userManager.FindByNameAsync(principal.Identity.Name);
+
+        if (user == null || user.RefreshToken != tokenDto.RefreshToken || user.RefreshTokenExpiration <= DateTime.Now)
+            throw new RefreshTokenBadRequest();
+
+        _user = user;
+
+        return await CreateToken(populateExp: false);
+
     }
 }

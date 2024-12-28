@@ -116,7 +116,7 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
             ValidateIssuer = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = secretValue,
-            ValidateLifetime = true,
+            ValidateLifetime = false,
             ValidIssuer = jwtSettings["validIssuer"],
             ValidAudience = jwtSettings["validAudience"]
         };

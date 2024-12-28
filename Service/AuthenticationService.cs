@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using Contracs;
@@ -15,13 +16,13 @@ namespace Service;
 
 internal sealed class AuthenticationService : ServiceBase, IAuthenticationService
 {
-
     private readonly UserManager<User> _userManager;
     private readonly IConfiguration _configuration;
 
     private User? _user;
 
-    public AuthenticationService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper, UserManager<User> userManager, IConfiguration configuration) : base(repositoryManager, logger, mapper)
+    public AuthenticationService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper,
+        UserManager<User> userManager, IConfiguration configuration) : base(repositoryManager, logger, mapper)
     {
         _userManager = userManager;
         _configuration = configuration;
@@ -29,7 +30,6 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
 
     public async Task<IdentityResult> RegisterUser(UserForRegisterationDto userForRegisterationDto)
     {
-
         // check for password and password confirm
         if (userForRegisterationDto.Password != userForRegisterationDto.PasswordConfirm)
         {
@@ -52,12 +52,15 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
 
     public async Task<bool> ValidateUser(UserForAuthenticateDto userForAuthenticateDto)
     {
-        if (userForAuthenticateDto == null || string.IsNullOrWhiteSpace(userForAuthenticateDto.UserName) || string.IsNullOrWhiteSpace(userForAuthenticateDto.Password)) throw new Exception("userForAuthenticateDto is null");
+        if (userForAuthenticateDto == null || string.IsNullOrWhiteSpace(userForAuthenticateDto.UserName) ||
+            string.IsNullOrWhiteSpace(userForAuthenticateDto.Password))
+            throw new Exception("userForAuthenticateDto is null");
 
         var userCredential = userForAuthenticateDto.UserName;
 
-        _user = userCredential.Contains('@') ? await _userManager.FindByEmailAsync(userCredential) : await _userManager.FindByNameAsync(userCredential);
-
+        _user = userCredential.Contains('@')
+            ? await _userManager.FindByEmailAsync(userCredential)
+            : await _userManager.FindByNameAsync(userCredential);
 
 
         var result = _user != null && await _userManager.CheckPasswordAsync(_user, userForAuthenticateDto.Password);
@@ -66,24 +69,81 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
             Logger.LogWarn($"{nameof(ValidateUser)}: Authentication failed. Wrong username or password");
 
         return result;
-
     }
 
-    public async Task<string> CreateToken()
+    public async Task<TokenDto> CreateToken(bool populateExp)
     {
         var singingCredentials = GetSigningCredentials();
         var claims = await GetUserClaims();
+        var tokenOptions = GenerateTokenOptions(singingCredentials, claims);
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var refreshToken = GenerateRefreshToken();
+        _user.RefreshToken = refreshToken;
+        if (populateExp)
+        {
+            _user.RefreshTokenExpiration = DateTime.Now.AddDays(7);
+        }
 
-        return GenerateToken(singingCredentials, claims);
+        await _userManager.UpdateAsync(_user);
+        
+        var accessToken = tokenHandler.WriteToken(tokenOptions);
+        var tokenDto = new TokenDto() { AccessToken = accessToken, RefreshToken = refreshToken };
+        return tokenDto;
+    }
+
+    private string GenerateRefreshToken()
+    {
+        var randomBytes = new byte[32];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(randomBytes);
+        }
+
+        return Convert.ToBase64String(randomBytes);
+    }
+
+    private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+    {
+        var jwtSettings = _configuration.GetSection("JwtSettings");
+        var environmentVar = Environment.GetEnvironmentVariable("SECRET_TOKEN_KEY");
+
+        if (string.IsNullOrWhiteSpace(environmentVar)) throw new Exception("Environment Variable is null");
+        
+        var secretValue = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(environmentVar));
+        var tokenValidationParameter = new TokenValidationParameters()
+        {
+            ValidateAudience = true,
+            ValidateIssuer = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = secretValue,
+            ValidateLifetime = true,
+            ValidIssuer = jwtSettings["validIssuer"],
+            ValidAudience = jwtSettings["validAudience"]
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        SecurityToken securityToken;
+        var principal = tokenHandler.ValidateToken(token, tokenValidationParameter, out securityToken);
+
+        var jwtSecurityToken = securityToken as JwtSecurityToken;
+        if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
+                StringComparison.InvariantCultureIgnoreCase))
+        {
+            throw new SecurityTokenException("Invalid token");
+        }
+
+        return principal;
+
     }
 
     private SigningCredentials GetSigningCredentials()
     {
-        var envValue = Environment.GetEnvironmentVariable("TODOAPI_SECRET");
+        var envValue = Environment.GetEnvironmentVariable("SECRET_TOKEN_KEY");
         if (envValue == null)
         {
             throw new Exception("Environment variable null value.");
         }
+
         var secretValue = Encoding.UTF8.GetBytes(envValue);
         var signingKey = new SymmetricSecurityKey(secretValue);
 
@@ -94,7 +154,8 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
     {
         if (_user == null || string.IsNullOrWhiteSpace(_user.UserName)) throw new Exception("cannot get user claims.");
 
-        var claims = new List<Claim>(){
+        var claims = new List<Claim>()
+        {
             new Claim(ClaimTypes.Name, _user.UserName)
         };
 
@@ -107,9 +168,10 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
         return claims;
     }
 
-    private string GenerateToken(SigningCredentials signingCredentials, List<Claim> claims)
+    private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
+        
 
         var expiresInMinutes = Convert.ToDouble(jwtSettings["expire"]);
         var expiresInDate = DateTime.Now.AddMinutes(expiresInMinutes);
@@ -117,14 +179,11 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
         var jwtOptions = new JwtSecurityToken(
             claims: claims,
             signingCredentials: signingCredentials,
-             issuer: jwtSettings["validIssuer"],
-             audience: jwtSettings["validAudience"],
-             expires: expiresInDate
-             );
+            issuer: jwtSettings["validIssuer"],
+            audience: jwtSettings["validAudience"],
+            expires: expiresInDate
+        );
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-
-        return tokenHandler.WriteToken(jwtOptions);
+        return jwtOptions;
     }
-
 }

@@ -155,7 +155,10 @@ namespace TodoAPI.Extensions
         public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
-            var secretKey = Environment.GetEnvironmentVariable("TODOAPI_SECRET");
+            var secretKey = Environment.GetEnvironmentVariable("SECRET_TOKEN_KEY");
+
+            if (string.IsNullOrWhiteSpace(secretKey))
+                throw new Exception($"Secret key is null. {nameof(ConfigureJwt)}");
 
             services.AddAuthentication(opt =>
             {

@@ -45,9 +45,9 @@ public class AuthenticationController : ControllerBase
 
         if (!result) return Unauthorized();
 
-        var token = await _service.AuthenticationService.CreateToken();
+        var tokenDto = await _service.AuthenticationService.CreateToken(populateExp: true);
 
-        return Ok(new { Token = token });
+        return Ok(tokenDto);
 
     }
 }

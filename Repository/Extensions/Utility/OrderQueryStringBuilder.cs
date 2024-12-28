@@ -7,7 +7,7 @@ public class OrderQueryStringBuilder<T>
 {
     public string BuildOrderQueryString(string queryStringParams)
     {
-        var queryPropertyNames = queryStringParams.ToLower().Trim().Split([','], StringSplitOptions.RemoveEmptyEntries);
+        var queryPropertyNames = queryStringParams.ToLower().Trim().Split(',', StringSplitOptions.RemoveEmptyEntries);
 
         var queryBuilder = new StringBuilder();
 

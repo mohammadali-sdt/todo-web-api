@@ -35,7 +35,7 @@ public class DataShaper<T> : IDataShaper<T>
     {
         var requiredProperties = new List<PropertyInfo>();
 
-        var fields = string.IsNullOrWhiteSpace(fieldsQueryString) ? [] : fieldsQueryString.Split([','], StringSplitOptions.RemoveEmptyEntries);
+        var fields = string.IsNullOrWhiteSpace(fieldsQueryString) ? [] : fieldsQueryString.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
         var objectProperties = typeof(T)
             .GetProperties(BindingFlags.Public | BindingFlags.Instance)

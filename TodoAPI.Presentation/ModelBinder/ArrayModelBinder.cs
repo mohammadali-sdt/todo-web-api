@@ -26,7 +26,7 @@ public class ArrayModelBinder : IModelBinder
         var genericType = bindingContext.ModelType.GetTypeInfo().GenericTypeArguments[0];
         var converter = TypeDescriptor.GetConverter(genericType);
 
-        var objectArray = providedValue.Split([','], StringSplitOptions.RemoveEmptyEntries)
+        var objectArray = providedValue.Split(',', StringSplitOptions.RemoveEmptyEntries)
             .Select(x => converter.ConvertFromString(x.Trim()))
             .ToArray();
 

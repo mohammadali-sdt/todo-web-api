@@ -28,6 +28,9 @@ public class User : IdentityUser<Guid>
     [Required(ErrorMessage = "Age is a required field.")]
     [Range(1, 100, ErrorMessage = "Age must be between {1} and {2}.")]
     public int Age { get; set; }
+    
+    public string? RefreshToken { get; set; }
+    public DateTime RefreshTokenExpiration { get; set; }
 
     public ICollection<Todo>? Todos { get; set; }
 }

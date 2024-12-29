@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using Contracs;
+using Entities.ConfigurationModels;
 using Entities.Exceptions;
 using Entities.Models;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +19,7 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
 {
     private readonly UserManager<User> _userManager;
     private readonly IConfiguration _configuration;
+    private readonly JwtConfiguration _jwtConfiguration;
 
     private User? _user;
 
@@ -26,6 +28,8 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
     {
         _userManager = userManager;
         _configuration = configuration;
+        _jwtConfiguration = new JwtConfiguration();
+        _configuration.Bind(_jwtConfiguration.Section, _jwtConfiguration);
     }
 
     public async Task<IdentityResult> RegisterUser(UserForRegisterationDto userForRegisterationDto)
@@ -104,7 +108,6 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
 
     private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
     {
-        var jwtSettings = _configuration.GetSection("JwtSettings");
         var environmentVar = Environment.GetEnvironmentVariable("SECRET_TOKEN_KEY");
 
         if (string.IsNullOrWhiteSpace(environmentVar)) throw new Exception("Environment Variable is null");
@@ -117,8 +120,8 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = secretValue,
             ValidateLifetime = false,
-            ValidIssuer = jwtSettings["validIssuer"],
-            ValidAudience = jwtSettings["validAudience"]
+            ValidIssuer = _jwtConfiguration.ValidIssuer,
+            ValidAudience = _jwtConfiguration.ValidAudience
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -170,17 +173,14 @@ internal sealed class AuthenticationService : ServiceBase, IAuthenticationServic
 
     private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
     {
-        var jwtSettings = _configuration.GetSection("JwtSettings");
-
-
-        var expiresInMinutes = Convert.ToDouble(jwtSettings["expire"]);
+        var expiresInMinutes = Convert.ToDouble(_jwtConfiguration.Expires);
         var expiresInDate = DateTime.Now.AddMinutes(expiresInMinutes);
 
         var jwtOptions = new JwtSecurityToken(
             claims: claims,
             signingCredentials: signingCredentials,
-            issuer: jwtSettings["validIssuer"],
-            audience: jwtSettings["validAudience"],
+            issuer: _jwtConfiguration.ValidIssuer,
+            audience: _jwtConfiguration.ValidAudience,
             expires: expiresInDate
         );
 

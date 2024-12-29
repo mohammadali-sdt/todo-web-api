@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Entities.ConfigurationModels;
 
 namespace TodoAPI.Extensions
 {
@@ -154,7 +155,9 @@ namespace TodoAPI.Extensions
 
         public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
         {
-            var jwtSettings = configuration.GetSection("JwtSettings");
+            var jwtSettings = new JwtConfiguration();
+            configuration.Bind(jwtSettings.Section, jwtSettings);
+            
             var secretKey = Environment.GetEnvironmentVariable("SECRET_TOKEN_KEY");
 
             if (string.IsNullOrWhiteSpace(secretKey))
@@ -173,8 +176,8 @@ namespace TodoAPI.Extensions
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
 
-                    ValidIssuer = jwtSettings["validIssuer"],
-                    ValidAudience = jwtSettings["validAudience"],
+                    ValidIssuer = jwtSettings.ValidIssuer,
+                    ValidAudience = jwtSettings.ValidAudience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
                 };
             });

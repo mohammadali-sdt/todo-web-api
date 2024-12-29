@@ -9,6 +9,7 @@ using Entities.Exceptions;
 using Entities.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Service.Contracts;
 using Shared.DataTransferObjects;
@@ -18,18 +19,20 @@ namespace Service;
 internal sealed class AuthenticationService : ServiceBase, IAuthenticationService
 {
     private readonly UserManager<User> _userManager;
-    private readonly IConfiguration _configuration;
+    // private readonly IConfiguration _configuration;
+    private readonly IOptions<JwtConfiguration> _configuration;
     private readonly JwtConfiguration _jwtConfiguration;
 
     private User? _user;
 
     public AuthenticationService(IRepositoryManager repositoryManager, ILoggerManager logger, IMapper mapper,
-        UserManager<User> userManager, IConfiguration configuration) : base(repositoryManager, logger, mapper)
+        UserManager<User> userManager, IOptions<JwtConfiguration> configuration) : base(repositoryManager, logger, mapper)
     {
         _userManager = userManager;
         _configuration = configuration;
-        _jwtConfiguration = new JwtConfiguration();
-        _configuration.Bind(_jwtConfiguration.Section, _jwtConfiguration);
+        _jwtConfiguration = _configuration.Value;
+        // _jwtConfiguration = new JwtConfiguration();
+        // _configuration.Bind(_jwtConfiguration.Section, _jwtConfiguration);
     }
 
     public async Task<IdentityResult> RegisterUser(UserForRegisterationDto userForRegisterationDto)

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Entities.ConfigurationModels;
+using Microsoft.OpenApi.Models;
 
 namespace TodoAPI.Extensions
 {
@@ -188,6 +189,15 @@ namespace TodoAPI.Extensions
         )
         {
             services.Configure<JwtConfiguration>(configuration.GetSection("JwtSettings"));
+        }
+
+
+        public static void ConfigureSwagger(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo() {Title = "TodoAPI", Version = "v1"});
+            });
         }
     }
 

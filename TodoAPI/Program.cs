@@ -100,14 +100,14 @@ app.UseOutputCache();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
+app.MapControllers();
+
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "TodoAPI v1");
 });
-
-app.MapControllers();
-
 
 // Use and Run methods
 // Run method is for terminal middlewares

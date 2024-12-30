@@ -24,10 +24,11 @@ namespace TodoAPI.Extensions
             {
                 options.AddPolicy("CorsPolicy", builder =>
                     builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .WithExposedHeaders());
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .WithExposedHeaders());
             });
+
         public static void ConfigureIISIntegration(this IServiceCollection services) =>
             services.Configure<IISOptions>(options => { });
 
@@ -50,7 +51,8 @@ namespace TodoAPI.Extensions
         {
             services.Configure<MvcOptions>(config =>
             {
-                var systemTextJsonOutputFormatter = config.OutputFormatters.OfType<SystemTextJsonOutputFormatter>()?.FirstOrDefault();
+                var systemTextJsonOutputFormatter =
+                    config.OutputFormatters.OfType<SystemTextJsonOutputFormatter>()?.FirstOrDefault();
 
                 if (systemTextJsonOutputFormatter != null)
                 {
@@ -58,15 +60,14 @@ namespace TodoAPI.Extensions
                     systemTextJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.vinix.apiroot+json");
                 }
 
-                var xmlOutputFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>()?.FirstOrDefault();
+                var xmlOutputFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>()
+                    ?.FirstOrDefault();
 
                 if (xmlOutputFormatter != null)
                 {
-
                     xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.vinix.hateoas+xml");
                     xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.vinix.apiroot+xml");
                 }
-
             });
         }
 
@@ -90,30 +91,27 @@ namespace TodoAPI.Extensions
         {
             services.AddOutputCache(options =>
             {
-                options.AddPolicy("120SecondsDurationPolicy", builder =>
-                {
-                    builder.Expire(TimeSpan.FromSeconds(120));
-                });
+                options.AddPolicy("120SecondsDurationPolicy",
+                    builder => { builder.Expire(TimeSpan.FromSeconds(120)); });
             });
         }
 
 
         public static void ConfigureRateLimiting(this IServiceCollection services)
         {
-
             services.AddRateLimiter(opt =>
             {
-
                 opt.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
                 {
-                    return RateLimitPartition.GetFixedWindowLimiter("GlobalLimiter", partition => new FixedWindowRateLimiterOptions
-                    {
-                        AutoReplenishment = true,
-                        PermitLimit = 5,
-                        QueueLimit = 2,
-                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                        Window = TimeSpan.FromMinutes(1)
-                    });
+                    return RateLimitPartition.GetFixedWindowLimiter("GlobalLimiter", partition =>
+                        new FixedWindowRateLimiterOptions
+                        {
+                            AutoReplenishment = true,
+                            PermitLimit = 5,
+                            QueueLimit = 2,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            Window = TimeSpan.FromMinutes(1)
+                        });
                 });
 
 
@@ -123,12 +121,14 @@ namespace TodoAPI.Extensions
 
                     if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
                     {
-                        await context.HttpContext.Response.WriteAsync($"Too many requests. Please try again after {retryAfter.TotalSeconds} second(s).");
+                        await context.HttpContext.Response.WriteAsync(
+                            $"Too many requests. Please try again after {retryAfter.TotalSeconds} second(s).");
                     }
 
                     else
                     {
-                        await context.HttpContext.Response.WriteAsync("Too many requests. Please try again later.", token);
+                        await context.HttpContext.Response.WriteAsync("Too many requests. Please try again later.",
+                            token);
                     }
                 };
             });
@@ -137,20 +137,19 @@ namespace TodoAPI.Extensions
 
         public static void ConfigureIdentity(this IServiceCollection services)
         {
-
             services.AddIdentity<User, IdentityRole<Guid>>(opt =>
-            {
-                opt.Password.RequireDigit = true;
-                opt.Password.RequireLowercase = true;
-                opt.Password.RequireUppercase = true;
-                opt.Password.RequireNonAlphanumeric = true;
-                opt.Password.RequiredLength = 8;
-                opt.User.RequireUniqueEmail = true;
-                opt.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
-            })
-            .AddEntityFrameworkStores<RepositoryContext>()
-            .AddDefaultTokenProviders();
-
+                {
+                    opt.Password.RequireDigit = true;
+                    opt.Password.RequireLowercase = true;
+                    opt.Password.RequireUppercase = true;
+                    opt.Password.RequireNonAlphanumeric = true;
+                    opt.Password.RequiredLength = 8;
+                    opt.User.RequireUniqueEmail = true;
+                    opt.User.AllowedUserNameCharacters =
+                        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+                })
+                .AddEntityFrameworkStores<RepositoryContext>()
+                .AddDefaultTokenProviders();
         }
 
 
@@ -158,7 +157,7 @@ namespace TodoAPI.Extensions
         {
             var jwtSettings = new JwtConfiguration();
             configuration.Bind(jwtSettings.Section, jwtSettings);
-            
+
             var secretKey = Environment.GetEnvironmentVariable("SECRET_TOKEN_KEY");
 
             if (string.IsNullOrWhiteSpace(secretKey))
@@ -196,9 +195,24 @@ namespace TodoAPI.Extensions
         {
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo() {Title = "TodoAPI", Version = "v1"});
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "TodoAPI", Version = "v1" });
+                options.AddSecurityDefinition("Bearer",
+                    new OpenApiSecurityScheme
+                    {
+                        In = ParameterLocation.Header, Description = "Place to add JWT with Bearer",
+                        Name = "Authorization", Type = SecuritySchemeType.ApiKey,
+                        BearerFormat = "JWT",
+                        Scheme = "Bearer"
+                    });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                            { Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" } },
+                        new string[] { }
+                    }
+                });
             });
         }
     }
-
 }

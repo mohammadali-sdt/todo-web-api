@@ -12,7 +12,7 @@ using TodoAPI.Presentation.ModelBinder;
 
 namespace TodoAPI.Presentation.Controllers;
 
-[ApiVersion("1.0")]
+[ApiExplorerSettings(GroupName = "v1")]
 [Route("api/users")]
 [ApiController]
 // [ResponseCache(CacheProfileName = "120SecondsDuration")]
